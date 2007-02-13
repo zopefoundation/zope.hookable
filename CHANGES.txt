@@ -1,2 +1,0 @@
-zope.hookable Package Changelog
-===============================

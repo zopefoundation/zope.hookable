@@ -18,13 +18,10 @@ $Id$
 
 import os
 
-try:
-    from setuptools import setup, Extension
-except ImportError, e:
-    from distutils.core import setup, Extension
+from setuptools import setup, find_packages, Extension
 
 setup(name='zope.hookable',
-      version='3.4-dev',
+      version='3.4dev',
       url='http://svn.zope.org/zope.hookable',
       license='ZPL 2.1',
       description='Zope hookable',
@@ -32,9 +29,7 @@ setup(name='zope.hookable',
       author_email='zope3-dev@zope.org',
       long_description="Hookable object support.",
 
-      packages=['zope',
-                'zope.hookable',
-                'zope.hookable.tests'],
+      packages=find_packages('src'),
       package_dir = {'': 'src'},
       ext_modules=[Extension("zope.hookable._zope_hookable",
                              [os.path.join('src', 'zope', 'hookable',
