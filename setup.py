@@ -39,7 +39,7 @@ setup(name='zope.hookable',
 
       namespace_packages=['zope',],
       tests_require = ['zope.testing'],
-      install_requires=[],
+      install_requires=['setuptools'],
       include_package_data = True,
 
       zip_safe = False,
