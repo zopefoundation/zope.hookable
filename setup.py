@@ -36,9 +36,8 @@ setup(name='zope.hookable',
                                            "_zope_hookable.c")
                               ]),
                    ],
-
       namespace_packages=['zope',],
-      tests_require = ['zope.testing'],
+      extras_require=dict(test=['zope.testing']),
       install_requires=['setuptools'],
       include_package_data = True,
 
