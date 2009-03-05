@@ -16,10 +16,14 @@
 $Id$
 """
 
+from zope.testing.doctest import ELLIPSIS
+from zope.testing.doctest import IGNORE_EXCEPTION_DETAIL
 from zope.testing.doctestunit import DocTestSuite
 
 def test_suite():
-    return DocTestSuite('zope.hookable')
+    return DocTestSuite('zope.hookable',
+                        optionflags=ELLIPSIS|IGNORE_EXCEPTION_DETAIL,
+                       )
 
 if __name__ == '__main__':
     import unittest
