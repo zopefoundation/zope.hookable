@@ -1,0 +1,12 @@
+CHANGES
+=======
+
+3.4.1 (unreleased)
+------------------
+
+- ...
+
+3.4.0 (2007-07-20)
+------------------
+
+- Initial release as a separate project.
