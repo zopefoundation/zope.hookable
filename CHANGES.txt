@@ -4,7 +4,9 @@ CHANGES
 3.4.1 (unreleased)
 ------------------
 
-- ...
+- Updated tests for compatibility with Python 2.6 traceback formats.
+
+- Use Jython-compatible ``bootstrap.py``.
 
 3.4.0 (2007-07-20)
 ------------------
