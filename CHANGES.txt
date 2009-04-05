@@ -1,7 +1,7 @@
 CHANGES
 =======
 
-3.4.1 (unreleased)
+3.4.1 (2009-04-05)
 ------------------
 
 - Updated tests for compatibility with Python 2.6 traceback formats.

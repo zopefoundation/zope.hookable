@@ -21,7 +21,7 @@ import os
 from setuptools import setup, find_packages, Extension
 
 setup(name='zope.hookable',
-      version = '3.4.1dev',
+      version = '3.4.1',
       url='http://svn.zope.org/zope.hookable',
       license='ZPL 2.1',
       description='Zope hookable',
