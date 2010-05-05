@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2006 Zope Corporation and Contributors.
+# Copyright (c) 2006 Zope Foundation and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -30,7 +30,7 @@ setup(name='zope.hookable',
       url='http://svn.zope.org/zope.hookable',
       license='ZPL 2.1',
       description='Zope hookable',
-      author='Zope Corporation and Contributors',
+      author='Zope Foundation and Contributors',
       author_email='zope3-dev@zope.org',
       long_description="Hookable object support.",
 
