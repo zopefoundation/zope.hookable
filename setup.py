@@ -31,7 +31,7 @@ setup(name='zope.hookable',
       license='ZPL 2.1',
       description='Zope hookable',
       author='Zope Foundation and Contributors',
-      author_email='zope3-dev@zope.org',
+      author_email='zope-dev@zope.org',
       long_description="Hookable object support.",
 
       packages=find_packages('src'),
