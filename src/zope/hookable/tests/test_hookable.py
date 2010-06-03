@@ -12,8 +12,6 @@
 #
 ##############################################################################
 """Test the hookable support Extension
-
-$Id$
 """
 
 import doctest

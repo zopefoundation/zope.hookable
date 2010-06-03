@@ -73,8 +73,6 @@
    Traceback (most recent call last):
       ...
    TypeError: 'madeupkeywordname' is an invalid keyword argument for this function
-
-$Id$
 """
 __docformat__ = 'restructuredtext'
 

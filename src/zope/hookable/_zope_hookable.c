@@ -12,8 +12,6 @@
  #
  ############################################################################*/
 
-#define _ZOPE_HOOKABLE_C "$Id$\n"
-
 /* _zope_hookable.c
 
    Provide an efficient implementation for hookable objects
