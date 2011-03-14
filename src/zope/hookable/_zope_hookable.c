@@ -21,6 +21,22 @@
 #include "Python.h"
 #include "structmember.h"
 
+/* Support for Python < 2.6 */
+
+#ifndef Py_TYPE
+  #define Py_TYPE(ob) (((PyObject*)(ob))->ob_type)
+#endif
+
+#ifndef cmpfunc
+  #define cmpfunc int
+#endif
+
+#ifndef PyVarObject_HEAD_INIT
+  #define PyVarObject_HEAD_INIT(type, size) \
+    PyObject_HEAD_INIT(type) size,
+#endif
+
+
 typedef struct {
 	PyObject_HEAD
         PyObject *old;
@@ -78,18 +94,13 @@ hookable_dealloc(hookable *self)
   PyObject_GC_UnTrack((PyObject *)self);
   Py_XDECREF(self->old);
   Py_XDECREF(self->implementation);
-  self->ob_type->tp_free((PyObject*)self);
+  Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 static PyObject *
-hookable_sethook(hookable *self, PyObject *args, PyObject *kwds)
+hookable_sethook(hookable *self, PyObject *implementation)
 {
-  static char *kwlist[] = {"implementation:sethook", NULL};
-  PyObject *implementation, *old;
-
-  if (! PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist,
-                                    &implementation))
-    return NULL;
+  PyObject *old;
 
   old = self->implementation;
   Py_INCREF(implementation);
@@ -115,7 +126,7 @@ hookable_reset(hookable *self)
 }
 
 static struct PyMethodDef hookable_methods[] = {
-  {"sethook",	(PyCFunction)hookable_sethook, METH_KEYWORDS,
+  {"sethook",	(PyCFunction)hookable_sethook, METH_O,
    "Set the hook implementation for the hookable object"},
   {"reset",	(PyCFunction)hookable_reset, METH_NOARGS,
    "Reset the hook to the original value"},
@@ -133,8 +144,8 @@ hookable_call(hookable *self, PyObject *args, PyObject *kw)
 }
 
 static PyMemberDef hookable_members[] = {
-  { "original", T_OBJECT_EX, offsetof(hookable, old), RO },
-  { "implementation", T_OBJECT_EX, offsetof(hookable, implementation), RO },
+  { "original", T_OBJECT_EX, offsetof(hookable, old), READONLY },
+  { "implementation", T_OBJECT_EX, offsetof(hookable, implementation), READONLY },
   {NULL}	/* Sentinel */
 };
 
@@ -144,8 +155,7 @@ static char Hookabletype__doc__[] =
 ;
 
 static PyTypeObject hookabletype = {
-	PyObject_HEAD_INIT(NULL)
-	/* ob_size           */ 0,
+	PyVarObject_HEAD_INIT(NULL, 0)
 	/* tp_name           */ "zope.hookable."
                                 "hookable",
 	/* tp_basicsize      */ sizeof(hookable),
@@ -154,7 +164,7 @@ static PyTypeObject hookabletype = {
 	/* tp_print          */ (printfunc)0,
 	/* tp_getattr        */ (getattrfunc)0,
 	/* tp_setattr        */ (setattrfunc)0,
-	/* tp_compare        */ (cmpfunc)0,
+	/* tp_compare        */ 0,
 	/* tp_repr           */ (reprfunc)0,
 	/* tp_as_number      */ 0,
 	/* tp_as_sequence    */ 0,
@@ -189,15 +199,28 @@ static PyTypeObject hookabletype = {
 	/* tp_free           */ 0/*_PyObject_GC_Del*/,
 };
 
-static struct PyMethodDef zch_methods[] = {
-	{NULL,	 (PyCFunction)NULL, 0, NULL}		/* sentinel */
+
+#if PY_MAJOR_VERSION >= 3
+  #define MOD_ERROR_VAL NULL
+  #define MOD_SUCCESS_VAL(val) val
+  #define MOD_INIT(name) PyMODINIT_FUNC PyInit_##name(void)
+  #define MOD_DEF(ob, name, doc, methods) \
+	  static struct PyModuleDef moduledef = { \
+	    PyModuleDef_HEAD_INIT, name, doc, -1, methods, }; \
+	  ob = PyModule_Create(&moduledef);
+#else
+  #define MOD_ERROR_VAL
+  #define MOD_SUCCESS_VAL(val)
+  #define MOD_INIT(name) void init##name(void)
+  #define MOD_DEF(ob, name, doc, methods) \
+          ob = Py_InitModule3(name, methods, doc);
+#endif
+
+static struct PyMethodDef module_methods[] = {
+	{NULL, NULL}
 };
 
-#ifndef PyMODINIT_FUNC	/* declarations for DLL import/export */
-#define PyMODINIT_FUNC void
-#endif
-PyMODINIT_FUNC
-init_zope_hookable(void)
+MOD_INIT(_zope_hookable)
 {
   PyObject *m;
 
@@ -206,16 +229,18 @@ init_zope_hookable(void)
   hookabletype.tp_free = _PyObject_GC_Del;
 
   if (PyType_Ready(&hookabletype) < 0)
-    return;
+    return MOD_ERROR_VAL;
 
-  m = Py_InitModule3("_zope_hookable", zch_methods,
-                     "Provide an efficient implementation for hookable objects"
-                     );
+  MOD_DEF(m, "_zope_hookable", 
+    "Provide an efficient implementation for hookable objects",
+    module_methods)
 
   if (m == NULL)
-    return;
-
+    return MOD_ERROR_VAL;
+  
   if (PyModule_AddObject(m, "hookable", (PyObject *)&hookabletype) < 0)
-    return;
-}
+    return MOD_ERROR_VAL;
 
+  return MOD_SUCCESS_VAL(m);
+
+}

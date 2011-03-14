@@ -45,17 +45,17 @@
    >>> f()
    41
 
-   >>> del f.original
-   Traceback (most recent call last):
-   ...
-   TypeError: readonly attribute
+   >>> try:
+   ...     del f.original
+   ...     raise "Could delete read only attribute"
+   ... except (TypeError, AttributeError):
+   ...     pass
 
-   >>> del f.implementation
-   Traceback (most recent call last):
-   ...
-   TypeError: readonly attribute
-
-   Some error cases.
+   >>> try:
+   ...     del f.implementation
+   ...     raise "Could delete read only attribute"
+   ... except (TypeError, AttributeError):
+   ...     pass
 
    >>> g = hookable()  # not enough args
    Traceback (most recent call last):
@@ -76,7 +76,7 @@
 """
 __docformat__ = 'restructuredtext'
 
-from _zope_hookable import *
+from zope.hookable._zope_hookable import *
 
 # DocTest:
 if __name__ == "__main__":

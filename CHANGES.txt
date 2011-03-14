@@ -6,6 +6,8 @@ CHANGES
 
 - Removed use of 'zope.testing.doctestunit' in favor of stdlib's 'doctest.
 
+- Python 3 support.
+
 3.4.1 (2009-04-05)
 ------------------
 
