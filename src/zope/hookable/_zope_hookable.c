@@ -196,7 +196,7 @@ static PyTypeObject hookabletype = {
         /* tp_init           */ (initproc)hookable_init,
         /* tp_alloc          */ (allocfunc)0,
         /* tp_new            */ (newfunc)0 /*PyType_GenericNew*/,
-	/* tp_free           */ 0/*_PyObject_GC_Del*/,
+	/* tp_free           */ 0/*PyObject_GC_Del*/,
 };
 
 
@@ -226,7 +226,7 @@ MOD_INIT(_zope_hookable)
 
 
   hookabletype.tp_new = PyType_GenericNew;
-  hookabletype.tp_free = _PyObject_GC_Del;
+  hookabletype.tp_free = PyObject_GC_Del;
 
   if (PyType_Ready(&hookabletype) < 0)
     return MOD_ERROR_VAL;
