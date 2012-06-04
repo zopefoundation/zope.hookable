@@ -18,13 +18,34 @@
 ##############################################################################
 """Setup for zope.hookable package
 """
-
 import os
+import platform
 
-from setuptools import setup, find_packages, Extension
+from setuptools import setup, find_packages, Extension, Feature
 
 def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+
+Cwrapper = Feature(
+    "C wrapper",
+    standard = True,
+    ext_modules=[Extension("zope.hookable._zope_hookable",
+                            [os.path.join('src', 'zope', 'hookable',
+                                        "_zope_hookable.c")
+                            ],
+                            extra_compile_args=['-g']),
+                ],
+)
+py_impl = getattr(platform, 'python_implementation', lambda: None)
+is_pypy = py_impl() == 'PyPy'
+
+# Jython cannot build the C optimizations, while on PyPy they are
+# anti-optimizations (the C extension compatibility layer is known-slow,
+# and defeats JIT opportunities).
+if is_pypy:
+    features = {}
+else:
+    features = {'Cwrapper': Cwrapper}
 
 setup(name='zope.hookable',
       version = '4.0.0dev',
@@ -44,9 +65,11 @@ setup(name='zope.hookable',
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.2",
+        "Programming Language :: Python :: Implementation :: CPython",
+        "Programming Language :: Python :: Implementation :: PyPy",
         "Topic :: Software Development :: Libraries :: Python Modules",
       ],
-
+      features=features,
       packages=find_packages('src'),
       package_dir={'': 'src'},
       ext_modules=[Extension("zope.hookable._zope_hookable",

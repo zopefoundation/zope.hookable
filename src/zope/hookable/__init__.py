@@ -41,4 +41,7 @@ class _py_hookable(object):
 
 hookable = _py_hookable
 
-from ._zope_hookable import hookable
+try:
+    from ._zope_hookable import hookable
+except ImportError:
+    pass
