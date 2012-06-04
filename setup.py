@@ -23,6 +23,9 @@ import os
 
 from setuptools import setup, find_packages, Extension
 
+def read(*rnames):
+    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+
 setup(name='zope.hookable',
       version = '4.0.0dev',
       url='http://svn.zope.org/zope.hookable',
@@ -30,7 +33,8 @@ setup(name='zope.hookable',
       description='Zope hookable',
       author='Zope Foundation and Contributors',
       author_email='zope-dev@zope.org',
-      long_description="Hookable object support.",
+      long_description=(read('README.txt') + '\n\n' +
+                        read('CHANGES.txt')),
       classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",

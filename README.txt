@@ -1,5 +1,5 @@
-zope.hookable Package Readme
-============================
+``zope.hookable`` Readme
+========================
 
 Overview
 --------
