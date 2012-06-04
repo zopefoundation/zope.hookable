@@ -4,6 +4,8 @@ CHANGES
 4.0.0 (unreleased)
 ------------------
 
+- Doctests moved to Sphinx documentation.
+
 - 100% unit test coverage.
 
 - Added 'setup.py docs' alias (installs ``Sphinx`` and dependencies).
