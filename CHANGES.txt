@@ -4,6 +4,8 @@ Changes
 4.0.0 (unreleased)
 ##################
 
+- Added a pure-Python reference implementation.
+
 - Doctests moved to Sphinx documentation.
 
 - 100% unit test coverage.

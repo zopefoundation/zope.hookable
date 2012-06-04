@@ -15,11 +15,11 @@
 """
 import unittest
 
-class HookableTests(unittest.TestCase):
+class PyHookableTests(unittest.TestCase):
 
     def _callFUT(self, *args, **kw):
-        from zope.hookable import hookable
-        return hookable(*args, **kw)
+        from zope.hookable import _py_hookable
+        return _py_hookable(*args, **kw)
 
     def test_before_hook(self):
         def _foo():
@@ -92,7 +92,15 @@ class HookableTests(unittest.TestCase):
         self.assertRaises(TypeError, self._callFUT, nonesuch=_foo)
 
 
+class HookableTests(PyHookableTests):
+
+    def _callFUT(self, *args, **kw):
+        from zope.hookable import hookable
+        return hookable(*args, **kw)
+
+
 def test_suite():
     return unittest.TestSuite((
+        unittest.makeSuite(PyHookableTests),
         unittest.makeSuite(HookableTests),
     ))
