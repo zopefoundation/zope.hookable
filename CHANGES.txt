@@ -4,6 +4,8 @@ Changes
 4.0.0 (unreleased)
 ##################
 
+- Added support for continuous integration using ``tox`` and ``jenkins``.
+
 - Added a pure-Python reference implementation.
 
 - Doctests moved to Sphinx documentation.
