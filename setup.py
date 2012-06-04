@@ -48,7 +48,7 @@ else:
     features = {'Cwrapper': Cwrapper}
 
 setup(name='zope.hookable',
-      version = '4.0.0dev',
+      version = '4.0.0',
       url='http://svn.zope.org/zope.hookable',
       license='ZPL 2.1',
       description='Zope hookable',
