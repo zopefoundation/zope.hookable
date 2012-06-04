@@ -60,6 +60,7 @@ setup(name='zope.hookable',
       zip_safe=False,
       test_suite='zope.hookable.tests.test_hookable.test_suite',
       extras_require = {
+        'docs': ['Sphinx'],
         'testing': ['nose', 'coverage'],
         'test': ['zope.testing'],
       },
