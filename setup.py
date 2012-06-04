@@ -55,10 +55,12 @@ setup(name='zope.hookable',
                               ], extra_compile_args=['-g']),
                    ],
       namespace_packages=['zope',],
-      extras_require=dict(test=['zope.testing']),
       install_requires=['setuptools'],
       include_package_data=True,
       zip_safe=False,
-      
       test_suite='zope.hookable.tests.test_hookable.test_suite',
-      )
+      extras_require = {
+        'testing': ['nose', 'coverage'],
+        'test': ['zope.testing'],
+      },
+)
