@@ -15,11 +15,84 @@
 """
 import unittest
 
+class HookableTests(unittest.TestCase):
+
+    def _callFUT(self, *args, **kw):
+        from zope.hookable import hookable
+        return hookable(*args, **kw)
+
+    def test_before_hook(self):
+        def _foo():
+            return 'FOO'
+        hooked = self._callFUT(_foo)
+        self.assertTrue(hooked.original is _foo)
+        self.assertTrue(hooked.implementation is _foo)
+        self.assertEqual(hooked(), 'FOO')
+
+    def test_after_hook(self):
+        def _foo():
+            return 'FOO'
+        def _bar():
+            return 'BAR'
+        hooked = self._callFUT(_foo)
+        old = hooked.sethook(_bar)
+        self.assertTrue(old is _foo)
+        self.assertTrue(hooked.original is _foo)
+        self.assertTrue(hooked.implementation is _bar)
+        self.assertEqual(hooked(), 'BAR')
+
+    def test_after_hook_and_reset(self):
+        def _foo():
+            return 'FOO'
+        def _bar():
+            return 'BAR'
+        hooked = self._callFUT(_foo)
+        old = hooked.sethook(_bar)
+        hooked.reset()
+        self.assertTrue(old is _foo)
+        self.assertTrue(hooked.original is _foo)
+        self.assertTrue(hooked.implementation is _foo)
+        self.assertEqual(hooked(), 'FOO')
+
+    def test_original_cannot_be_deleted(self):
+        def _foo():
+            return 'FOO'
+        hooked = self._callFUT(_foo)
+        def _try():
+            del hooked.original
+        self.assertRaises((TypeError, AttributeError), _try)
+
+    def test_implementation_cannot_be_deleted(self):
+        def _foo():
+            return 'FOO'
+        hooked = self._callFUT(_foo)
+        def _try():
+            del hooked.implementation
+        self.assertRaises((TypeError, AttributeError), _try)
+
+    def test_no_args(self):
+        self.assertRaises(TypeError, self._callFUT)
+
+    def test_too_many_args(self):
+        def _foo():
+            return 'FOO'
+        self.assertRaises(TypeError, self._callFUT, _foo, _foo)
+
+    def test_w_implementation_kwarg(self):
+        def _foo():
+            return 'FOO'
+        hooked = self._callFUT(implementation=_foo)
+        self.assertTrue(hooked.original is _foo)
+        self.assertTrue(hooked.implementation is _foo)
+        self.assertEqual(hooked(), 'FOO')
+
+    def test_w_unknown_kwarg(self):
+        def _foo():
+            return 'FOO'
+        self.assertRaises(TypeError, self._callFUT, nonesuch=_foo)
+
+
 def test_suite():
-    import doctest
     return unittest.TestSuite((
-        doctest.DocTestSuite('zope.hookable',
-                             optionflags=doctest.ELLIPSIS |
-                             doctest.IGNORE_EXCEPTION_DETAIL,
-                            ),
+        unittest.makeSuite(HookableTests),
     ))
