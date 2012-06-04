@@ -13,15 +13,13 @@
 ##############################################################################
 """Test the hookable support Extension
 """
-
-import doctest
+import unittest
 
 def test_suite():
-    return doctest.DocTestSuite('zope.hookable',
-                                optionflags=doctest.ELLIPSIS |
-                                            doctest.IGNORE_EXCEPTION_DETAIL,
-                               )
-
-if __name__ == '__main__':
-    import unittest
-    unittest.main()
+    import doctest
+    return unittest.TestSuite((
+        doctest.DocTestSuite('zope.hookable',
+                             optionflags=doctest.ELLIPSIS |
+                             doctest.IGNORE_EXCEPTION_DETAIL,
+                            ),
+    ))
