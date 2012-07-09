@@ -43,5 +43,5 @@ hookable = _py_hookable
 
 try:
     from ._zope_hookable import hookable
-except ImportError:
+except ImportError: #pragma NO COVER
     pass
