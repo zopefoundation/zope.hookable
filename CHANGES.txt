@@ -4,7 +4,8 @@ Changes
 4.0.1 (unreleased)
 ##################
 
-- TBD
+- Avoid building the C extension explicitly (use the "feature" indirection
+  instead).  https://bugs.launchpad.net/zope.hookable/+bug/1025470
 
 4.0.0 (2012-06-04)
 ##################
