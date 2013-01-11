@@ -54,8 +54,8 @@ setup(name='zope.hookable',
       description='Zope hookable',
       author='Zope Foundation and Contributors',
       author_email='zope-dev@zope.org',
-      long_description=(read('README.txt') + '\n\n' +
-                        read('CHANGES.txt')),
+      long_description=(read('README.rst') + '\n\n' +
+                        read('CHANGES.rst')),
       classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
