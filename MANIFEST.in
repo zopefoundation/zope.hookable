@@ -1,8 +1,13 @@
 include *.rst
 include *.txt
+include *.py
+include buildout.cfg
+include tox.ini
 
-recursive-include docs *
-recursive-include src *
+recursive-include docs *.bat
+recursive-include docs *.py
+recursive-include docs *.rst
+recursive-include docs Makefile
 
 global-exclude *.dll
 global-exclude *.pyc
