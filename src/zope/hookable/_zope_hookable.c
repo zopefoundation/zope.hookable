@@ -224,6 +224,12 @@ MOD_INIT(_zope_hookable)
 {
   PyObject *m;
 
+  MOD_DEF(m, "_zope_hookable",
+    "Provide an efficient implementation for hookable objects",
+    module_methods)
+
+  if (m == NULL)
+    return MOD_ERROR_VAL;
 
   hookabletype.tp_new = PyType_GenericNew;
   hookabletype.tp_free = PyObject_GC_Del;
@@ -231,13 +237,6 @@ MOD_INIT(_zope_hookable)
   if (PyType_Ready(&hookabletype) < 0)
     return MOD_ERROR_VAL;
 
-  MOD_DEF(m, "_zope_hookable", 
-    "Provide an efficient implementation for hookable objects",
-    module_methods)
-
-  if (m == NULL)
-    return MOD_ERROR_VAL;
-  
   if (PyModule_AddObject(m, "hookable", (PyObject *)&hookabletype) < 0)
     return MOD_ERROR_VAL;
 

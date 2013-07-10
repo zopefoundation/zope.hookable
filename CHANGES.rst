@@ -6,6 +6,8 @@ Changes
 
 - Updated ``boostrap.py`` to version 2.2.
 
+- fixed extension compilation on windows python 3.x
+
 4.0.2 (2012-12-31)
 ##################
 
