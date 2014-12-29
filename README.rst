@@ -1,13 +1,11 @@
 ``zope.hookable``
 =================
 
-Overview
---------
+.. image:: https://travis-ci.org/zopefoundation/zope.hookable.png?branch=master
+        :target: https://travis-ci.org/zopefoundation/zope.hookable
 
-Hookable object support.
-
-Support the efficient creation of hookable objects, which are callable objects
-that are meant to be replaced by other callables, at least optionally.
+This package supports the efficient creation of "hookable" objects, which
+are callable objects that are meant to be optionally replaced.
 
 The idea is you create a function that does some default thing and make it
 hookable. Later, someone can modify what it does by calling its sethook method
