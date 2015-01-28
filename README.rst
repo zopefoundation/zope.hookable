@@ -1,8 +1,16 @@
 ``zope.hookable``
 =================
 
+.. image:: https://pypip.in/version/zope.hookable/badge.svg?style=flat
+    :target: https://pypi.python.org/pypi/zope.hookable/
+    :alt: Latest Version
+
 .. image:: https://travis-ci.org/zopefoundation/zope.hookable.png?branch=master
         :target: https://travis-ci.org/zopefoundation/zope.hookable
+
+.. image:: https://readthedocs.org/projects/zopehookable/badge/?version=latest
+        :target: http://zopehookable.readthedocs.org/en/latest/
+        :alt: Documentation Status
 
 This package supports the efficient creation of "hookable" objects, which
 are callable objects that are meant to be optionally replaced.
