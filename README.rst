@@ -1,7 +1,7 @@
 ``zope.hookable``
 =================
 
-.. image:: https://pypip.in/version/zope.hookable/badge.svg?style=flat
+.. image:: https://img.shields.io/pypi/v/zope.hookable.svg
     :target: https://pypi.python.org/pypi/zope.hookable/
     :alt: Latest Version
 
