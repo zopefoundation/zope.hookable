@@ -16,7 +16,7 @@ Changes
 4.0.3 (2014-03-17)
 ##################
 
-- Updat ``boostrap.py`` to version 2.2.
+- Update ``boostrap.py`` to version 2.2.
 
 - Fix extension compilation on Py3k.
 
