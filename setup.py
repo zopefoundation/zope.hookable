@@ -53,7 +53,7 @@ TESTS_REQUIRE = [
 ]
 
 setup(name='zope.hookable',
-      version='4.1.0.dev0',
+      version='4.1.0',
       url='http://github.com/zopefoundation/zope.hookable',
       license='ZPL 2.1',
       description='Zope hookable',
