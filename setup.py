@@ -24,11 +24,12 @@ import platform
 from setuptools import setup, find_packages, Extension, Feature
 
 def read(*rnames):
-    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+    with open(os.path.join(os.path.dirname(__file__), *rnames)) as f:
+        return f.read()
 
 Cwrapper = Feature(
     "C wrapper",
-    standard = True,
+    standard=True,
     ext_modules=[Extension("zope.hookable._zope_hookable",
                             [os.path.join('src', 'zope', 'hookable',
                                         "_zope_hookable.c")
@@ -47,43 +48,51 @@ if is_pypy:
 else:
     features = {'Cwrapper': Cwrapper}
 
+TESTS_REQUIRE = [
+    'zope.testing',
+]
+
 setup(name='zope.hookable',
-      version = '4.1.0.dev0',
-      url='http://svn.zope.org/zope.hookable',
+      version='4.1.0.dev0',
+      url='http://github.com/zopefoundation/zope.hookable',
       license='ZPL 2.1',
       description='Zope hookable',
+      keywords='function hook replacement loose coupled',
       author='Zope Foundation and Contributors',
       author_email='zope-dev@zope.org',
       long_description=(read('README.rst') + '\n\n' +
                         read('CHANGES.rst')),
       classifiers=[
-        "Development Status :: 5 - Production/Stable",
-        "Intended Audience :: Developers",
-        "License :: OSI Approved :: Zope Public License",
-        "Operating System :: OS Independent",
-        "Programming Language :: Python",
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.3",
-        "Programming Language :: Python :: 3.4",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: Implementation :: CPython",
-        "Programming Language :: Python :: Implementation :: PyPy",
-        "Framework :: Zope3",
-        "Topic :: Software Development :: Libraries :: Python Modules",
+          "Development Status :: 5 - Production/Stable",
+          "Intended Audience :: Developers",
+          "License :: OSI Approved :: Zope Public License",
+          "Operating System :: OS Independent",
+          "Programming Language :: Python",
+          "Programming Language :: Python :: 2",
+          "Programming Language :: Python :: 2.7",
+          "Programming Language :: Python :: 3",
+          "Programming Language :: Python :: 3.4",
+          "Programming Language :: Python :: 3.5",
+          "Programming Language :: Python :: 3.6",
+          "Programming Language :: Python :: Implementation :: CPython",
+          "Programming Language :: Python :: Implementation :: PyPy",
+          "Framework :: Zope3",
+          "Topic :: Software Development :: Libraries :: Python Modules",
       ],
       features=features,
       packages=find_packages('src'),
       package_dir={'': 'src'},
       namespace_packages=['zope',],
-      install_requires=['setuptools'],
+      install_requires=[
+          'setuptools',
+      ],
       include_package_data=True,
       zip_safe=False,
       test_suite='zope.hookable.tests.test_hookable.test_suite',
-      extras_require = {
+      extras_require={
         'docs': ['Sphinx'],
-        'testing': ['nose', 'coverage'],
-        'test': ['zope.testing'],
+        'testing': TESTS_REQUIRE + ['coverage',],
+        'test': TESTS_REQUIRE,
       },
+      python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*',
 )

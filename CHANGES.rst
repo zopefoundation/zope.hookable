@@ -1,32 +1,33 @@
-Changes
--------
+=========
+ Changes
+=========
 
 4.1.0 (unreleased)
-##################
+==================
 
-- Drop support for Python 2.6 and 3.2.
+- Drop support for Python 2.6, 3.2 and 3.3.
 
-- Add support for Python 3.5.
+- Add support for Python 3.5 and 3.6.
 
 4.0.4 (2014-03-19)
-##################
+==================
 
 - Add support for Python 3.4.
 
 4.0.3 (2014-03-17)
-##################
+==================
 
 - Update ``boostrap.py`` to version 2.2.
 
 - Fix extension compilation on Py3k.
 
 4.0.2 (2012-12-31)
-##################
+==================
 
 - Flesh out PyPI Trove classifiers.
 
 4.0.1 (2012-11-21)
-##################
+==================
 
 - Add support for Python 3.3.
 
@@ -34,7 +35,7 @@ Changes
   instead).  https://bugs.launchpad.net/zope.hookable/+bug/1025470
 
 4.0.0 (2012-06-04)
-##################
+==================
 
 - Add support for PyPy.
 
@@ -58,13 +59,13 @@ Changes
 - Add Python 3 support.
 
 3.4.1 (2009-04-05)
-##################
+==================
 
 - Update for compatibility with Python 2.6 traceback formats.
 
 - Use Jython-compatible ``bootstrap.py``.
 
 3.4.0 (2007-07-20)
-##################
+==================
 
 - Initial release as a separate project.
