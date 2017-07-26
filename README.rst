@@ -3,12 +3,12 @@
 ===================
 
 .. image:: https://img.shields.io/pypi/v/zope.hookable.svg
-		:target: https://pypi.python.org/pypi/zope.hookable/
-		:alt: Latest release
+        :target: https://pypi.python.org/pypi/zope.hookable/
+        :alt: Latest release
 
 .. image:: https://img.shields.io/pypi/pyversions/zope.hookable.svg
-		:target: https://pypi.org/project/zope.hookable/
-		:alt: Supported Python versions
+        :target: https://pypi.org/project/zope.hookable/
+        :alt: Supported Python versions
 
 .. image:: https://travis-ci.org/zopefoundation/zope.hookable.png?branch=master
         :target: https://travis-ci.org/zopefoundation/zope.hookable
