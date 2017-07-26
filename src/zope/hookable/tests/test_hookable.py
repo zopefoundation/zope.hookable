@@ -31,7 +31,7 @@ class PyHookableTests(unittest.TestCase):
 
     def test_after_hook(self):
         def _foo():
-            return 'FOO'
+            self.fail("This should not be called")
         def _bar():
             return 'BAR'
         hooked = self._callFUT(_foo)
@@ -45,7 +45,7 @@ class PyHookableTests(unittest.TestCase):
         def _foo():
             return 'FOO'
         def _bar():
-            return 'BAR'
+            self.fail("This should not be called")
         hooked = self._callFUT(_foo)
         old = hooked.sethook(_bar)
         hooked.reset()
@@ -56,7 +56,7 @@ class PyHookableTests(unittest.TestCase):
 
     def test_original_cannot_be_deleted(self):
         def _foo():
-            return 'FOO'
+            self.fail("This should not be called")
         hooked = self._callFUT(_foo)
         def _try():
             del hooked.original
@@ -64,7 +64,7 @@ class PyHookableTests(unittest.TestCase):
 
     def test_implementation_cannot_be_deleted(self):
         def _foo():
-            return 'FOO'
+            self.fail("This should not be called")
         hooked = self._callFUT(_foo)
         def _try():
             del hooked.implementation
@@ -75,7 +75,7 @@ class PyHookableTests(unittest.TestCase):
 
     def test_too_many_args(self):
         def _foo():
-            return 'FOO'
+            self.fail("This should not be called")
         self.assertRaises(TypeError, self._callFUT, _foo, _foo)
 
     def test_w_implementation_kwarg(self):
@@ -88,7 +88,7 @@ class PyHookableTests(unittest.TestCase):
 
     def test_w_unknown_kwarg(self):
         def _foo():
-            return 'FOO'
+            self.fail("This should not be called")
         self.assertRaises(TypeError, self._callFUT, nonesuch=_foo)
 
 
@@ -100,7 +100,4 @@ class HookableTests(PyHookableTests):
 
 
 def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(PyHookableTests),
-        unittest.makeSuite(HookableTests),
-    ))
+    return unittest.defaultTestLoader.loadTestsFromName(__name__)

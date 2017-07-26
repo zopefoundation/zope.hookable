@@ -16,7 +16,7 @@
 
 class _py_hookable(object):
     __slots__ = ('_original', '_implementation')
-    
+
     def __init__(self, *args, **kw):
         if len(args) == 0 and 'implementation' in kw:
             args = (kw.pop('implementation'),)
@@ -43,5 +43,5 @@ hookable = _py_hookable
 
 try:
     from ._zope_hookable import hookable
-except ImportError: #pragma NO COVER
+except ImportError: # pragma: no cover
     pass
