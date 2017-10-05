@@ -10,7 +10,7 @@
         :target: https://pypi.org/project/zope.hookable/
         :alt: Supported Python versions
 
-.. image:: https://travis-ci.org/zopefoundation/zope.hookable.png?branch=master
+.. image:: https://travis-ci.org/zopefoundation/zope.hookable.svg?branch=master
         :target: https://travis-ci.org/zopefoundation/zope.hookable
 
 .. image:: https://readthedocs.org/projects/zopehookable/badge/?version=latest
