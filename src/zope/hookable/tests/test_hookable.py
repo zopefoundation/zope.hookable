@@ -33,7 +33,9 @@ class PyHookableMixin(object):
 class HookableMixin(object):
 
     def _callFUT(self, *args, **kw):
-        from zope.hookable import hookable
+        from zope.hookable import hookable, _py_hookable
+        if hookable is _py_hookable: # pragma: no cover
+            raise unittest.SkipTest("Hookable and PyHookable are the same")
         return hookable(*args, **kw)
 
 

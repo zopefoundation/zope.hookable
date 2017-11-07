@@ -18,7 +18,7 @@ class _py_hookable(object):
     __slots__ = ('_original', '_implementation')
 
     def __init__(self, *args, **kw):
-        if len(args) == 0 and 'implementation' in kw:
+        if not args and 'implementation' in kw:
             args = (kw.pop('implementation'),)
         if kw:
             raise TypeError('Unknown keyword arguments')
@@ -26,8 +26,25 @@ class _py_hookable(object):
             raise TypeError('Exactly one argument required')
         self._original = self._implementation = args[0]
 
-    original = property(lambda self: self._original)
-    implementation = property(lambda self: self._implementation)
+    @property
+    def original(self):
+        return self._original
+
+    @property
+    def implementation(self):
+        return self._implementation
+
+    @property
+    def __doc__(self):
+        return self._original.__doc__
+
+    @property
+    def __dict__(self):
+        return getattr(self._original, '__dict__', {})
+
+    @property
+    def __bases__(self):
+        return getattr(self._original, '__bases__', ())
 
     def sethook(self, new_callable):
         old, self._implementation = self._implementation, new_callable
