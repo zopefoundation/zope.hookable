@@ -1,6 +1,6 @@
-===================
- ``zope.hookable``
-===================
+===============
+ zope.hookable
+===============
 
 .. image:: https://img.shields.io/pypi/v/zope.hookable.svg
         :target: https://pypi.python.org/pypi/zope.hookable/
@@ -14,7 +14,7 @@
         :target: https://travis-ci.org/zopefoundation/zope.hookable
 
 .. image:: https://readthedocs.org/projects/zopehookable/badge/?version=latest
-        :target: http://zopehookable.readthedocs.io/en/latest/
+        :target: https://zopehookable.readthedocs.io/en/latest/
         :alt: Documentation Status
 
 .. image:: https://coveralls.io/repos/github/zopefoundation/zope.hookable/badge.svg?branch=master
@@ -29,4 +29,4 @@ hookable. Later, someone can modify what it does by calling its sethook method
 and changing its implementation.  All users of the function, including those
 that imported it, will see the change.
 
-Documentation is hosted at http://zopehookable.readthedocs.io
+Documentation is hosted at https://zopehookable.readthedocs.io
