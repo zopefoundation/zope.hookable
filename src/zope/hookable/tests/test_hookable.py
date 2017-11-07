@@ -15,6 +15,15 @@
 """
 import unittest
 
+def return_foo():
+    return 'FOO'
+
+def return_bar():
+    return 'BAR'
+
+def not_called():
+    raise AssertionError("This should not be called")
+
 class PyHookableTests(unittest.TestCase):
 
     def _callFUT(self, *args, **kw):
@@ -22,75 +31,55 @@ class PyHookableTests(unittest.TestCase):
         return _py_hookable(*args, **kw)
 
     def test_before_hook(self):
-        def _foo():
-            return 'FOO'
-        hooked = self._callFUT(_foo)
-        self.assertTrue(hooked.original is _foo)
-        self.assertTrue(hooked.implementation is _foo)
+        hooked = self._callFUT(return_foo)
+        self.assertIs(hooked.original, return_foo)
+        self.assertIs(hooked.implementation, return_foo)
         self.assertEqual(hooked(), 'FOO')
 
     def test_after_hook(self):
-        def _foo():
-            self.fail("This should not be called")
-        def _bar():
-            return 'BAR'
-        hooked = self._callFUT(_foo)
-        old = hooked.sethook(_bar)
-        self.assertTrue(old is _foo)
-        self.assertTrue(hooked.original is _foo)
-        self.assertTrue(hooked.implementation is _bar)
+        hooked = self._callFUT(not_called)
+        old = hooked.sethook(return_bar)
+        self.assertIs(old, not_called)
+        self.assertIs(hooked.original, not_called)
+        self.assertIs(hooked.implementation, return_bar)
         self.assertEqual(hooked(), 'BAR')
 
     def test_after_hook_and_reset(self):
-        def _foo():
-            return 'FOO'
-        def _bar():
-            self.fail("This should not be called")
-        hooked = self._callFUT(_foo)
-        old = hooked.sethook(_bar)
+        hooked = self._callFUT(return_foo)
+        old = hooked.sethook(not_called)
         hooked.reset()
-        self.assertTrue(old is _foo)
-        self.assertTrue(hooked.original is _foo)
-        self.assertTrue(hooked.implementation is _foo)
+        self.assertIs(old, return_foo)
+        self.assertIs(hooked.original, return_foo)
+        self.assertIs(hooked.implementation, return_foo)
         self.assertEqual(hooked(), 'FOO')
 
     def test_original_cannot_be_deleted(self):
-        def _foo():
-            self.fail("This should not be called")
-        hooked = self._callFUT(_foo)
-        def _try():
+        hooked = self._callFUT(not_called)
+        with self.assertRaises((TypeError, AttributeError)):
             del hooked.original
-        self.assertRaises((TypeError, AttributeError), _try)
 
     def test_implementation_cannot_be_deleted(self):
-        def _foo():
-            self.fail("This should not be called")
-        hooked = self._callFUT(_foo)
-        def _try():
+        hooked = self._callFUT(not_called)
+        with self.assertRaises((TypeError, AttributeError)):
             del hooked.implementation
-        self.assertRaises((TypeError, AttributeError), _try)
 
     def test_no_args(self):
-        self.assertRaises(TypeError, self._callFUT)
+        with self.assertRaises(TypeError):
+            self._callFUT()
 
     def test_too_many_args(self):
-        def _foo():
-            self.fail("This should not be called")
-        self.assertRaises(TypeError, self._callFUT, _foo, _foo)
+        with self.assertRaises(TypeError):
+            self._callFUT(not_called, not_called)
 
     def test_w_implementation_kwarg(self):
-        def _foo():
-            return 'FOO'
-        hooked = self._callFUT(implementation=_foo)
-        self.assertTrue(hooked.original is _foo)
-        self.assertTrue(hooked.implementation is _foo)
+        hooked = self._callFUT(implementation=return_foo)
+        self.assertIs(hooked.original, return_foo)
+        self.assertIs(hooked.implementation, return_foo)
         self.assertEqual(hooked(), 'FOO')
 
     def test_w_unknown_kwarg(self):
-        def _foo():
-            self.fail("This should not be called")
-        self.assertRaises(TypeError, self._callFUT, nonesuch=_foo)
-
+        with self.assertRaises(TypeError):
+            self._callFUT(nonesuch=42)
 
 class HookableTests(PyHookableTests):
 
