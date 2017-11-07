@@ -21,26 +21,10 @@
 #include "Python.h"
 #include "structmember.h"
 
-/* Support for Python < 2.6 */
-
-#ifndef Py_TYPE
-  #define Py_TYPE(ob) (((PyObject*)(ob))->ob_type)
-#endif
-
-#ifndef cmpfunc
-  #define cmpfunc int
-#endif
-
-#ifndef PyVarObject_HEAD_INIT
-  #define PyVarObject_HEAD_INIT(type, size) \
-    PyObject_HEAD_INIT(type) size,
-#endif
-
-
 typedef struct {
-	PyObject_HEAD
-        PyObject *old;
-        PyObject *implementation;
+    PyObject_HEAD
+    PyObject *old;
+    PyObject *implementation;
 } hookable;
 
 static int
@@ -126,11 +110,11 @@ hookable_reset(hookable *self)
 }
 
 static struct PyMethodDef hookable_methods[] = {
-  {"sethook",	(PyCFunction)hookable_sethook, METH_O,
+  {"sethook",   (PyCFunction)hookable_sethook, METH_O,
    "Set the hook implementation for the hookable object"},
-  {"reset",	(PyCFunction)hookable_reset, METH_NOARGS,
+  {"reset", (PyCFunction)hookable_reset, METH_NOARGS,
    "Reset the hook to the original value"},
-  {NULL,		NULL}		/* sentinel */
+  {NULL,        NULL}       /* sentinel */
 };
 
 
@@ -146,7 +130,7 @@ hookable_call(hookable *self, PyObject *args, PyObject *kw)
 static PyMemberDef hookable_members[] = {
   { "original", T_OBJECT_EX, offsetof(hookable, old), READONLY },
   { "implementation", T_OBJECT_EX, offsetof(hookable, implementation), READONLY },
-  {NULL}	/* Sentinel */
+  {NULL}    /* Sentinel */
 };
 
 
@@ -155,48 +139,48 @@ static char Hookabletype__doc__[] =
 ;
 
 static PyTypeObject hookabletype = {
-	PyVarObject_HEAD_INIT(NULL, 0)
-	/* tp_name           */ "zope.hookable."
+    PyVarObject_HEAD_INIT(NULL, 0)
+    /* tp_name           */ "zope.hookable."
                                 "hookable",
-	/* tp_basicsize      */ sizeof(hookable),
-	/* tp_itemsize       */ 0,
-	/* tp_dealloc        */ (destructor)&hookable_dealloc,
-	/* tp_print          */ (printfunc)0,
-	/* tp_getattr        */ (getattrfunc)0,
-	/* tp_setattr        */ (setattrfunc)0,
-	/* tp_compare        */ 0,
-	/* tp_repr           */ (reprfunc)0,
-	/* tp_as_number      */ 0,
-	/* tp_as_sequence    */ 0,
-	/* tp_as_mapping     */ 0,
-	/* tp_hash           */ (hashfunc)0,
-	/* tp_call           */ (ternaryfunc)hookable_call,
-	/* tp_str            */ (reprfunc)0,
-        /* tp_getattro       */ (getattrofunc)0,
-        /* tp_setattro       */ (setattrofunc)0,
-        /* tp_as_buffer      */ 0,
-        /* tp_flags          */ Py_TPFLAGS_DEFAULT
-				| Py_TPFLAGS_BASETYPE
+    /* tp_basicsize      */ sizeof(hookable),
+    /* tp_itemsize       */ 0,
+    /* tp_dealloc        */ (destructor)&hookable_dealloc,
+    /* tp_print          */ (printfunc)0,
+    /* tp_getattr        */ (getattrfunc)0,
+    /* tp_setattr        */ (setattrfunc)0,
+    /* tp_compare        */ 0,
+    /* tp_repr           */ (reprfunc)0,
+    /* tp_as_number      */ 0,
+    /* tp_as_sequence    */ 0,
+    /* tp_as_mapping     */ 0,
+    /* tp_hash           */ (hashfunc)0,
+    /* tp_call           */ (ternaryfunc)hookable_call,
+    /* tp_str            */ (reprfunc)0,
+    /* tp_getattro       */ (getattrofunc)0,
+    /* tp_setattro       */ (setattrofunc)0,
+    /* tp_as_buffer      */ 0,
+    /* tp_flags          */ Py_TPFLAGS_DEFAULT
+                                | Py_TPFLAGS_BASETYPE
                                 | Py_TPFLAGS_HAVE_GC,
-	/* tp_doc            */ Hookabletype__doc__,
-        /* tp_traverse       */ (traverseproc)hookable_traverse,
-        /* tp_clear          */ (inquiry)hookable_clear,
-        /* tp_richcompare    */ (richcmpfunc)0,
-        /* tp_weaklistoffset */ (long)0,
-        /* tp_iter           */ (getiterfunc)0,
-        /* tp_iternext       */ (iternextfunc)0,
-        /* tp_methods        */ hookable_methods,
-        /* tp_members        */ hookable_members,
-        /* tp_getset         */ 0,
-        /* tp_base           */ 0,
-        /* tp_dict           */ 0, /* internal use */
-        /* tp_descr_get      */ (descrgetfunc)0,
-        /* tp_descr_set      */ (descrsetfunc)0,
-        /* tp_dictoffset     */ 0,
-        /* tp_init           */ (initproc)hookable_init,
-        /* tp_alloc          */ (allocfunc)0,
-        /* tp_new            */ (newfunc)0 /*PyType_GenericNew*/,
-	/* tp_free           */ 0/*PyObject_GC_Del*/,
+    /* tp_doc            */ Hookabletype__doc__,
+    /* tp_traverse       */ (traverseproc)hookable_traverse,
+    /* tp_clear          */ (inquiry)hookable_clear,
+    /* tp_richcompare    */ (richcmpfunc)0,
+    /* tp_weaklistoffset */ (long)0,
+    /* tp_iter           */ (getiterfunc)0,
+    /* tp_iternext       */ (iternextfunc)0,
+    /* tp_methods        */ hookable_methods,
+    /* tp_members        */ hookable_members,
+    /* tp_getset         */ 0,
+    /* tp_base           */ 0,
+    /* tp_dict           */ 0, /* internal use */
+    /* tp_descr_get      */ (descrgetfunc)0,
+    /* tp_descr_set      */ (descrsetfunc)0,
+    /* tp_dictoffset     */ 0,
+    /* tp_init           */ (initproc)hookable_init,
+    /* tp_alloc          */ (allocfunc)0,
+    /* tp_new            */ (newfunc)0 /*PyType_GenericNew*/,
+    /* tp_free           */ 0/*PyObject_GC_Del*/,
 };
 
 
@@ -205,9 +189,9 @@ static PyTypeObject hookabletype = {
   #define MOD_SUCCESS_VAL(val) val
   #define MOD_INIT(name) PyMODINIT_FUNC PyInit_##name(void)
   #define MOD_DEF(ob, name, doc, methods) \
-	  static struct PyModuleDef moduledef = { \
-	    PyModuleDef_HEAD_INIT, name, doc, -1, methods, }; \
-	  ob = PyModule_Create(&moduledef);
+      static struct PyModuleDef moduledef = { \
+        PyModuleDef_HEAD_INIT, name, doc, -1, methods, }; \
+      ob = PyModule_Create(&moduledef);
 #else
   #define MOD_ERROR_VAL
   #define MOD_SUCCESS_VAL(val)
@@ -217,7 +201,7 @@ static PyTypeObject hookabletype = {
 #endif
 
 static struct PyMethodDef module_methods[] = {
-	{NULL, NULL}
+    {NULL, NULL}
 };
 
 MOD_INIT(_zope_hookable)
