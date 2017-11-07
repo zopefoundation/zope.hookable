@@ -24,11 +24,21 @@ def return_bar():
 def not_called():
     raise AssertionError("This should not be called")
 
-class PyHookableTests(unittest.TestCase):
+class PyHookableMixin(object):
 
     def _callFUT(self, *args, **kw):
         from zope.hookable import _py_hookable
         return _py_hookable(*args, **kw)
+
+class HookableMixin(object):
+
+    def _callFUT(self, *args, **kw):
+        from zope.hookable import hookable
+        return hookable(*args, **kw)
+
+
+class PyHookableTests(PyHookableMixin,
+                      unittest.TestCase):
 
     def test_before_hook(self):
         hooked = self._callFUT(return_foo)
@@ -81,12 +91,68 @@ class PyHookableTests(unittest.TestCase):
         with self.assertRaises(TypeError):
             self._callFUT(nonesuch=42)
 
-class HookableTests(PyHookableTests):
+    def test_class(self):
+        class C(object):
+            pass
 
-    def _callFUT(self, *args, **kw):
-        from zope.hookable import hookable
-        return hookable(*args, **kw)
+        hooked = self._callFUT(C)
+        self.assertIsInstance(hooked(), C)
 
+        hooked.sethook(return_bar)
+        self.assertEqual(hooked(), 'BAR')
+
+class TestIssue6Py(PyHookableMixin,
+                   unittest.TestCase):
+    # Make sphinx docs for hooked objects work.
+    # https://github.com/zopefoundation/zope.hookable/issues/6
+    # We need to proxy __doc__ to the original,
+    # and synthesize an empty __bases__ and a __dict__ attribute
+    # if they're not present.
+
+    def _check_preserves_doc(self, docs):
+        self.assertEqual("I have some docs", docs.__doc__)
+
+        hooked = self._callFUT(docs)
+        self.assertEqual(hooked.__doc__, docs.__doc__)
+
+    def test_preserves_doc_function(self):
+        def docs():
+            """I have some docs"""
+        self._check_preserves_doc(docs)
+
+    def test_preserves_doc_class(self):
+        class Docs(object):
+            """I have some docs"""
+
+        self._check_preserves_doc(Docs)
+
+    def test_empty_bases_function(self):
+        hooked = self._callFUT(return_foo)
+        self.assertEqual((), hooked.__bases__)
+
+    def test_empty_dict_function(self):
+        hooked = self._callFUT(return_foo)
+        self.assertEqual({}, hooked.__dict__)
+
+    def test_bases_class(self):
+        class C(object):
+            pass
+        self.assertEqual(C.__bases__, (object,))
+        hooked = self._callFUT(C)
+        self.assertEqual(hooked.__bases__, (object,))
+
+    def test_dict_class(self):
+        class C(object):
+            pass
+
+        hooked = self._callFUT(C)
+        self.assertEqual(hooked.__dict__, C.__dict__)
+
+class HookableTests(HookableMixin, PyHookableTests):
+    pass
+
+class TestIssue6(HookableMixin, TestIssue6Py):
+    pass
 
 def test_suite():
     return unittest.defaultTestLoader.loadTestsFromName(__name__)
