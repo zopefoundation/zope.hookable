@@ -21,33 +21,66 @@
 import os
 import platform
 
-from setuptools import setup, find_packages, Extension, Feature
+from distutils.errors import CCompilerError
+from distutils.errors import DistutilsExecError
+from distutils.errors import DistutilsPlatformError
+
+from setuptools import setup
+from setuptools import find_packages
+from setuptools import Extension
+from setuptools import Feature
+
+from setuptools.command.build_ext import build_ext
+
+class optional_build_ext(build_ext):
+    """This class subclasses build_ext and allows
+       the building of C extensions to fail.
+    """
+    def run(self):
+        try:
+            build_ext.run(self)
+        except DistutilsPlatformError as e:
+            self._unavailable(e)
+
+    def build_extension(self, ext):
+        try:
+            build_ext.build_extension(self, ext)
+        except (CCompilerError, DistutilsExecError, OSError) as e:
+            self._unavailable(e)
+
+    def _unavailable(self, e):
+        print('*' * 80)
+        print("""WARNING:
+        An optional code optimization (C extension) could not be compiled.
+        Optimizations for this package will not be available!""")
+        print()
+        print(e)
+        print('*' * 80)
 
 def read(*rnames):
     with open(os.path.join(os.path.dirname(__file__), *rnames)) as f:
         return f.read()
 
-Cwrapper = Feature(
-    "C wrapper",
+codeoptimization = Feature(
+    "Optional code optimizations",
     standard=True,
     ext_modules=[
-        Extension("zope.hookable._zope_hookable",
-                  [os.path.join('src', 'zope', 'hookable',
-                                "_zope_hookable.c")
-                  ],
-                  extra_compile_args=['-g']),
+        Extension(
+            "zope.hookable._zope_hookable",
+            [os.path.join('src', 'zope', 'hookable', "_zope_hookable.c")],
+        ),
     ],
 )
-py_impl = getattr(platform, 'python_implementation', lambda: None)
-is_pypy = py_impl() == 'PyPy'
+
+is_pypy_or_jython = platform.python_implementation() in ('PyPy', 'Jython')
 
 # Jython cannot build the C optimizations, while on PyPy they are
 # anti-optimizations (the C extension compatibility layer is known-slow,
 # and defeats JIT opportunities).
-if is_pypy:
+if is_pypy_or_jython:
     features = {}
 else:
-    features = {'Cwrapper': Cwrapper}
+    features = {'codeoptimization': codeoptimization}
 
 TESTS_REQUIRE = [
     'zope.testing',
@@ -81,6 +114,9 @@ setup(name='zope.hookable',
           "Topic :: Software Development :: Libraries :: Python Modules",
       ],
       features=features,
+      cmdclass={
+          'build_ext': optional_build_ext,
+      },
       packages=find_packages('src'),
       package_dir={'': 'src'},
       namespace_packages=['zope',],

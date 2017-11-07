@@ -9,6 +9,11 @@
   ``__dict__``) of the hooked object. This lets Sphinx document them.
   See `issue 6 <https://github.com/zopefoundation/zope.hookable/issues/6>`_.
 
+- Respect ``PURE_PYTHON`` at runtime. At build time, always try to
+  build the C extensions on supported platforms, but allow it to fail.
+  See `issue 7
+  <https://github.com/zopefoundation/zope.hookable/issues/7>`_.
+
 
 4.1.0 (2017-07-26)
 ==================
