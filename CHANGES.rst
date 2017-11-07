@@ -5,7 +5,7 @@
 4.1.1 (unreleased)
 ==================
 
-- Expose the ``_doc__`` (and, where applicable, ``__bases__`` and
+- Expose the ``__doc__`` (and, where applicable, ``__bases__`` and
   ``__dict__``) of the hooked object. This lets Sphinx document them.
   See `issue 6 <https://github.com/zopefoundation/zope.hookable/issues/6>`_.
 

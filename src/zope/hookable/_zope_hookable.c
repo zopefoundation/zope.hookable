@@ -145,7 +145,7 @@ hookable_getattro(hookable *self, PyObject *name)
         return NULL;
     }
 
-    maybe_special_name = strlen(name_as_string) > 2 && name_as_string[0] == '_' && name_as_string[1] == '_';
+    maybe_special_name = name_as_string[0] == '_' && name_as_string[1] == '_';
 
     if (maybe_special_name) {
         /* pass through __doc__ to the original implementation */
