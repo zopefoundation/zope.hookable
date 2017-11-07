@@ -2,7 +2,7 @@
  Changes
 =========
 
-4.1.1 (unreleased)
+4.2.0 (2017-11-07)
 ==================
 
 - Expose the ``__doc__`` (and, where applicable, ``__bases__`` and
