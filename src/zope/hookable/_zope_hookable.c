@@ -127,6 +127,53 @@ hookable_call(hookable *self, PyObject *args, PyObject *kw)
   return NULL;
 }
 
+
+static PyObject *
+hookable_getattro(hookable *self, PyObject *name)
+{
+    PyObject *result = NULL;
+    const char *name_as_string;
+    int maybe_special_name;
+
+#if PY_MAJOR_VERSION < 3
+    name_as_string = PyString_AsString(name);
+#else
+    name_as_string = PyUnicode_AsUTF8(name);
+#endif
+
+    if (name_as_string == NULL) {
+        return NULL;
+    }
+
+    maybe_special_name = strlen(name_as_string) > 2 && name_as_string[0] == '_' && name_as_string[1] == '_';
+
+    if (maybe_special_name) {
+        /* pass through __doc__ to the original implementation */
+        if (strcmp("__doc__", name_as_string) == 0) {
+            return PyObject_GetAttr(self->old, name);
+        }
+        /* synthesize __base__ and __dict__ if the original fails */
+        if (strcmp("__bases__", name_as_string) == 0) {
+            result = PyObject_GetAttr(self->old, name);
+            if (result == NULL) {
+                PyErr_Clear();
+                result = PyTuple_New(0);
+            }
+            return result;
+        }
+        if (strcmp("__dict__", name_as_string) == 0) {
+            result = PyObject_GetAttr(self->old, name);
+            if (result == NULL) {
+                PyErr_Clear();
+                result = PyDict_New();
+            }
+            return result;
+        }
+    }
+
+    return PyObject_GenericGetAttr((PyObject*)self, name);
+}
+
 static PyMemberDef hookable_members[] = {
   { "original", T_OBJECT_EX, offsetof(hookable, old), READONLY },
   { "implementation", T_OBJECT_EX, offsetof(hookable, implementation), READONLY },
@@ -156,7 +203,7 @@ static PyTypeObject hookabletype = {
     /* tp_hash           */ (hashfunc)0,
     /* tp_call           */ (ternaryfunc)hookable_call,
     /* tp_str            */ (reprfunc)0,
-    /* tp_getattro       */ (getattrofunc)0,
+    /* tp_getattro       */ (getattrofunc)hookable_getattro,
     /* tp_setattro       */ (setattrofunc)0,
     /* tp_as_buffer      */ 0,
     /* tp_flags          */ Py_TPFLAGS_DEFAULT

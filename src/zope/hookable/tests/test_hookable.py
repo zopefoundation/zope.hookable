@@ -150,6 +150,27 @@ class TestIssue6Py(PyHookableMixin,
         hooked = self._callFUT(C)
         self.assertEqual(hooked.__dict__, C.__dict__)
 
+    def test_non_string_attr_name(self):
+        # Specifically for the C implementation, which has to deal with this
+        hooked = self._callFUT(return_foo)
+        with self.assertRaises(TypeError):
+            getattr(hooked, 42)
+
+        with self.assertRaises(TypeError):
+            hooked.__getattribute__(42)
+
+    def test_unicode_attribute_name(self):
+        # Specifically for the C implementation, which has to deal with this
+        hooked = self._callFUT(return_foo)
+        result = hooked.__getattribute__(u'__bases__')
+        self.assertEqual(result, ())
+
+    def test_short_name(self):
+        # Specifically for the C implementation, which has to deal with this
+        hooked = self._callFUT(return_foo)
+        with self.assertRaises(AttributeError):
+            hooked.__getattribute__('')
+
 class HookableTests(HookableMixin, PyHookableTests):
     pass
 
