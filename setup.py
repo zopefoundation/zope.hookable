@@ -30,12 +30,13 @@ def read(*rnames):
 Cwrapper = Feature(
     "C wrapper",
     standard=True,
-    ext_modules=[Extension("zope.hookable._zope_hookable",
-                            [os.path.join('src', 'zope', 'hookable',
-                                        "_zope_hookable.c")
-                            ],
-                            extra_compile_args=['-g']),
-                ],
+    ext_modules=[
+        Extension("zope.hookable._zope_hookable",
+                  [os.path.join('src', 'zope', 'hookable',
+                                "_zope_hookable.c")
+                  ],
+                  extra_compile_args=['-g']),
+    ],
 )
 py_impl = getattr(platform, 'python_implementation', lambda: None)
 is_pypy = py_impl() == 'PyPy'
@@ -90,9 +91,9 @@ setup(name='zope.hookable',
       zip_safe=False,
       test_suite='zope.hookable.tests.test_hookable.test_suite',
       extras_require={
-        'docs': ['Sphinx'],
-        'testing': TESTS_REQUIRE + ['coverage',],
-        'test': TESTS_REQUIRE,
+          'docs': ['Sphinx'],
+          'testing': TESTS_REQUIRE + ['coverage',],
+          'test': TESTS_REQUIRE,
       },
       python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*',
 )
