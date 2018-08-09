@@ -32,6 +32,7 @@ from setuptools import Feature
 
 from setuptools.command.build_ext import build_ext
 
+
 class optional_build_ext(build_ext):
     """This class subclasses build_ext and allows
        the building of C extensions to fail.
@@ -57,9 +58,11 @@ class optional_build_ext(build_ext):
         print(e)
         print('*' * 80)
 
+
 def read(*rnames):
     with open(os.path.join(os.path.dirname(__file__), *rnames)) as f:
         return f.read()
+
 
 codeoptimization = Feature(
     "Optional code optimizations",
@@ -108,6 +111,7 @@ setup(name='zope.hookable',
           "Programming Language :: Python :: 3.4",
           "Programming Language :: Python :: 3.5",
           "Programming Language :: Python :: 3.6",
+          "Programming Language :: Python :: 3.7",
           "Programming Language :: Python :: Implementation :: CPython",
           "Programming Language :: Python :: Implementation :: PyPy",
           "Framework :: Zope3",
@@ -119,7 +123,7 @@ setup(name='zope.hookable',
       },
       packages=find_packages('src'),
       package_dir={'': 'src'},
-      namespace_packages=['zope',],
+      namespace_packages=['zope'],
       install_requires=[
           'setuptools',
       ],
@@ -128,7 +132,7 @@ setup(name='zope.hookable',
       test_suite='zope.hookable.tests.test_hookable.test_suite',
       extras_require={
           'docs': ['Sphinx'],
-          'testing': TESTS_REQUIRE + ['coverage',],
+          'testing': TESTS_REQUIRE + ['coverage'],
           'test': TESTS_REQUIRE,
       },
       python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*',
