@@ -1,28 +1,24 @@
 language: python
-sudo: false
+dist: xenial
 matrix:
   include:
     - python: 2.7
-    - python: 3.4
     - python: 3.5
     - python: 3.6
     - python: 3.7
-      dist: xenial
-      sudo: true
-    - python: pypy
-    - python: pypy3
+    - python: pypy2.7-6.0.0
+    - python: pypy3.5-6.0.0
     - python: 2.7
-      env:
-          - PURE_PYTHON=1
+      env: PURE_PYTHON=1
 install:
-    - pip install -U pip setuptools
-    - pip install -U coveralls coverage
-    - pip install -U -e .[test,docs]
+  - pip install -U pip setuptools
+  - pip install -U coveralls coverage
+  - pip install -U -e .[test,docs]
 script:
-    - coverage run setup.py test -q
-    - coverage run -a -m sphinx -b doctest -d docs/_build/doctrees docs docs/_build/doctest
+  - coverage run setup.py test -q
+  - coverage run -a -m sphinx -b doctest -d docs/_build/doctrees docs docs/_build/doctest
 after_success:
-    - coveralls
+  - coveralls
 notifications:
-    email: false
+  email: false
 cache: pip
