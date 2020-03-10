@@ -5,7 +5,9 @@
 5.0.1 (unreleased)
 ==================
 
-- Nothing changed yet.
+- Stop using the setuptools ``Feature`` class, allowing this
+  project to be built from source with newer versions of setuptools
+  that remove that functionality.
 
 
 5.0.0 (2019-11-12)
