@@ -28,7 +28,6 @@ from distutils.errors import DistutilsPlatformError
 from setuptools import setup
 from setuptools import find_packages
 from setuptools import Extension
-from setuptools import Feature
 
 from setuptools.command.build_ext import build_ext
 
@@ -64,16 +63,12 @@ def read(*rnames):
         return f.read()
 
 
-codeoptimization = Feature(
-    "Optional code optimizations",
-    standard=True,
-    ext_modules=[
+codeoptimization = [
         Extension(
             "zope.hookable._zope_hookable",
             [os.path.join('src', 'zope', 'hookable', "_zope_hookable.c")],
         ),
-    ],
-)
+]
 
 is_pypy_or_jython = platform.python_implementation() in ('PyPy', 'Jython')
 
@@ -81,9 +76,9 @@ is_pypy_or_jython = platform.python_implementation() in ('PyPy', 'Jython')
 # anti-optimizations (the C extension compatibility layer is known-slow,
 # and defeats JIT opportunities).
 if is_pypy_or_jython:
-    features = {}
+    ext_modules = {}
 else:
-    features = {'codeoptimization': codeoptimization}
+    ext_modules = codeoptimization
 
 TESTS_REQUIRE = [
     'zope.testing',
@@ -117,7 +112,7 @@ setup(name='zope.hookable',
           "Framework :: Zope :: 3",
           "Topic :: Software Development :: Libraries :: Python Modules",
       ],
-      features=features,
+      ext_modules=ext_modules,
       cmdclass={
           'build_ext': optional_build_ext,
       },
