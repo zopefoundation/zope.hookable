@@ -2,7 +2,7 @@
  Changes
 =========
 
-5.0.1 (unreleased)
+5.0.1 (2020-03-10)
 ==================
 
 - Stop using the setuptools ``Feature`` class, allowing this
