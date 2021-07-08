@@ -36,6 +36,7 @@ class optional_build_ext(build_ext):
     """This class subclasses build_ext and allows
        the building of C extensions to fail.
     """
+
     def run(self):
         try:
             build_ext.run(self)
@@ -64,10 +65,10 @@ def read(*rnames):
 
 
 codeoptimization = [
-        Extension(
-            "zope.hookable._zope_hookable",
-            [os.path.join('src', 'zope', 'hookable', "_zope_hookable.c")],
-        ),
+    Extension(
+        "zope.hookable._zope_hookable",
+        [os.path.join('src', 'zope', 'hookable', "_zope_hookable.c")],
+    ),
 ]
 
 is_pypy_or_jython = platform.python_implementation() in ('PyPy', 'Jython')
@@ -82,6 +83,7 @@ else:
 
 TESTS_REQUIRE = [
     'zope.testing',
+    'zope.testrunner',
 ]
 
 setup(name='zope.hookable',
@@ -107,6 +109,7 @@ setup(name='zope.hookable',
           "Programming Language :: Python :: 3.6",
           "Programming Language :: Python :: 3.7",
           "Programming Language :: Python :: 3.8",
+          "Programming Language :: Python :: 3.9",
           "Programming Language :: Python :: Implementation :: CPython",
           "Programming Language :: Python :: Implementation :: PyPy",
           "Framework :: Zope :: 3",
@@ -131,4 +134,4 @@ setup(name='zope.hookable',
           'test': TESTS_REQUIRE,
       },
       python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*',
-)
+      )

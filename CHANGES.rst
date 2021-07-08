@@ -5,7 +5,9 @@
 5.0.2 (unreleased)
 ==================
 
-- Nothing changed yet.
+- Add support for Python 3.9.
+
+- Create Linux aarch wheels.
 
 
 5.0.1 (2020-03-10)

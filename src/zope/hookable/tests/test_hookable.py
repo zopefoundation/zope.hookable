@@ -15,14 +15,18 @@
 """
 import unittest
 
+
 def return_foo():
     return 'FOO'
+
 
 def return_bar():
     return 'BAR'
 
+
 def not_called():
     raise AssertionError("This should not be called")
+
 
 class PyHookableMixin(object):
 
@@ -30,20 +34,22 @@ class PyHookableMixin(object):
         from zope.hookable import _py_hookable
         return _py_hookable(*args, **kw)
 
+
 class HookableMixin(object):
 
     def _callFUT(self, *args, **kw):
         from zope.hookable import hookable, _py_hookable
-        if hookable is _py_hookable: # pragma: no cover
+        if hookable is _py_hookable:
             raise unittest.SkipTest("Hookable and PyHookable are the same")
-        return hookable(*args, **kw)
+        return hookable(*args, **kw)  # pragma: no cover
 
 
 class PyHookableTests(PyHookableMixin,
                       unittest.TestCase):
 
     def test_pure_python(self):
-        from zope.hookable import _PURE_PYTHON, hookable, _py_hookable, _c_hookable
+        from zope.hookable import _PURE_PYTHON, hookable
+        from zope.hookable import _py_hookable, _c_hookable
         self.assertIs(hookable, _py_hookable if _PURE_PYTHON else _c_hookable)
 
     def test_before_hook(self):
@@ -106,6 +112,7 @@ class PyHookableTests(PyHookableMixin,
 
         hooked.sethook(return_bar)
         self.assertEqual(hooked(), 'BAR')
+
 
 class TestIssue6Py(PyHookableMixin,
                    unittest.TestCase):
@@ -175,11 +182,14 @@ class TestIssue6Py(PyHookableMixin,
         with self.assertRaises(AttributeError):
             hooked.__getattribute__('')
 
+
 class HookableTests(HookableMixin, PyHookableTests):
     pass
 
+
 class TestIssue6(HookableMixin, TestIssue6Py):
     pass
+
 
 def test_suite():
     return unittest.defaultTestLoader.loadTestsFromName(__name__)

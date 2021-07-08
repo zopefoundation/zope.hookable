@@ -20,6 +20,7 @@ import platform
 _PYPY = platform.python_implementation() in ('PyPy', 'Jython')
 _PURE_PYTHON = os.environ.get('PURE_PYTHON', _PYPY)
 
+
 class _py_hookable(object):
     __slots__ = ('_original', '_implementation')
 
@@ -62,12 +63,13 @@ class _py_hookable(object):
     def __call__(self, *args, **kw):
         return self._implementation(*args, **kw)
 
+
 try:
     from zope.hookable._zope_hookable import hookable as _c_hookable
-except ImportError: # pragma: no cover
+except ImportError:  # pragma: no cover
     _c_hookable = None
 
-if _PURE_PYTHON or _c_hookable is None: # pragma: no cover
+if _PURE_PYTHON or _c_hookable is None:
     hookable = _py_hookable
-else:
+else:  # pragma: no cover
     hookable = _c_hookable
