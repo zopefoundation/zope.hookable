@@ -2,12 +2,12 @@
  Changes
 =========
 
-5.0.2 (unreleased)
+5.1.0 (unreleased)
 ==================
 
 - Add support for Python 3.9.
 
-- Create Linux aarch wheels.
+- Create Linux aarch64 wheels.
 
 
 5.0.1 (2020-03-10)
