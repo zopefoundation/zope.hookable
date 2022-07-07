@@ -5,7 +5,7 @@
 5.2 (unreleased)
 ================
 
-- Add support for Python 3.10 and 3.11 (as of 3.11.0a6).
+- Add support for Python 3.10 and 3.11 (as of 3.11.0b3).
 
 
 5.1.0 (2021-07-20)
