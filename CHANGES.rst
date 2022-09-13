@@ -5,7 +5,7 @@
 5.2 (unreleased)
 ================
 
-- Add support for Python 3.10 and 3.11 (as of 3.11.0b3).
+- Add support for Python 3.10 and 3.11 (as of 3.11.0rc1).
 
 - Disable unsafe math optimizations in C code.  See `pull request 25
   <https://github.com/zopefoundation/zope.hookable/pull/25>`_.
