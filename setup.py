@@ -85,7 +85,7 @@ TESTS_REQUIRE = [
 ]
 
 setup(name='zope.hookable',
-      version='5.3.dev0',
+      version='5.3',
       url='http://github.com/zopefoundation/zope.hookable',
       license='ZPL 2.1',
       description='Zope hookable',
@@ -109,6 +109,7 @@ setup(name='zope.hookable',
           "Programming Language :: Python :: 3.8",
           "Programming Language :: Python :: 3.9",
           "Programming Language :: Python :: 3.10",
+          "Programming Language :: Python :: 3.11",
           "Programming Language :: Python :: Implementation :: CPython",
           "Programming Language :: Python :: Implementation :: PyPy",
           "Framework :: Zope :: 3",
