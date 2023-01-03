@@ -21,7 +21,7 @@ _PYPY = platform.python_implementation() in ('PyPy', 'Jython')
 _PURE_PYTHON = os.environ.get('PURE_PYTHON', _PYPY)
 
 
-class _py_hookable(object):
+class _py_hookable:
     __slots__ = ('_original', '_implementation')
 
     def __init__(self, *args, **kw):

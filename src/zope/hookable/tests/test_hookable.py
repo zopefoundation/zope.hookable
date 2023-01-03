@@ -28,14 +28,14 @@ def not_called():
     raise AssertionError("This should not be called")
 
 
-class PyHookableMixin(object):
+class PyHookableMixin:
 
     def _callFUT(self, *args, **kw):
         from zope.hookable import _py_hookable
         return _py_hookable(*args, **kw)
 
 
-class HookableMixin(object):
+class HookableMixin:
 
     def _callFUT(self, *args, **kw):
         from zope.hookable import _py_hookable
@@ -107,7 +107,7 @@ class PyHookableTests(PyHookableMixin,
             self._callFUT(nonesuch=42)
 
     def test_class(self):
-        class C(object):
+        class C:
             pass
 
         hooked = self._callFUT(C)
@@ -137,7 +137,7 @@ class TestIssue6Py(PyHookableMixin,
         self._check_preserves_doc(docs)
 
     def test_preserves_doc_class(self):
-        class Docs(object):
+        class Docs:
             """I have some docs"""
 
         self._check_preserves_doc(Docs)
@@ -151,14 +151,14 @@ class TestIssue6Py(PyHookableMixin,
         self.assertEqual({}, hooked.__dict__)
 
     def test_bases_class(self):
-        class C(object):
+        class C:
             pass
         self.assertEqual(C.__bases__, (object,))
         hooked = self._callFUT(C)
         self.assertEqual(hooked.__bases__, (object,))
 
     def test_dict_class(self):
-        class C(object):
+        class C:
             pass
 
         hooked = self._callFUT(C)
@@ -176,7 +176,7 @@ class TestIssue6Py(PyHookableMixin,
     def test_unicode_attribute_name(self):
         # Specifically for the C implementation, which has to deal with this
         hooked = self._callFUT(return_foo)
-        result = hooked.__getattribute__(u'__bases__')
+        result = hooked.__getattribute__('__bases__')
         self.assertEqual(result, ())
 
     def test_short_name(self):
