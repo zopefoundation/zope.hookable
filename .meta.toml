@@ -16,7 +16,7 @@ with-macos = false
 [tox]
 use-flake8 = true
 testenv-deps = [
-    "urllib3 < 2",
+    "py37: urllib3 < 2",
     ]
 
 [coverage]
