@@ -15,7 +15,7 @@ with-macos = false
 
 [tox]
 use-flake8 = true
-docs-deps = [
+testenv-deps = [
     "urllib3 < 2",
     ]
 
