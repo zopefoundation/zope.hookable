@@ -7,7 +7,7 @@
 
 - Drop support for Python 2.7, 3.5, 3.6.
 
-- Add preliminary support for Python 3.12 as of 3.12b4.
+- Add preliminary support for Python 3.12 as of 3.12rc3.
 
 
 5.4 (2022-11-17)
