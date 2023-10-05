@@ -2,12 +2,12 @@
  Changes
 =========
 
-6.0 (unreleased)
+6.0 (2023-10-05)
 ================
 
 - Drop support for Python 2.7, 3.5, 3.6.
 
-- Add preliminary support for Python 3.12 as of 3.12rc3.
+- Add support for Python 3.12.
 
 
 5.4 (2022-11-17)
