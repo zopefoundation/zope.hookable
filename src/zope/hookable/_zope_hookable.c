@@ -12,11 +12,9 @@
  #
  ############################################################################*/
 
-/* _zope_hookable.c
-
-   Provide an efficient implementation for hookable objects
-
- */
+static char module__doc__[] = (
+    "Provide an efficient implementation for hookable objects"
+);
 
 #include "Python.h"
 #include "structmember.h"
@@ -226,39 +224,42 @@ static PyTypeObject hookabletype = {
     /* tp_free           */ 0 /*PyObject_GC_Del*/,
 };
 
-#define MOD_ERROR_VAL NULL
-#define MOD_SUCCESS_VAL(val) val
-#define MOD_INIT(name) PyMODINIT_FUNC PyInit_##name(void)
-#define MOD_DEF(ob, name, doc, methods)                                        \
-    static struct PyModuleDef moduledef = {                                    \
-        PyModuleDef_HEAD_INIT, name, doc, -1, methods,                         \
-    };                                                                         \
-    ob = PyModule_Create(&moduledef);
 
 static struct PyMethodDef module_methods[] = {
     { NULL, NULL }  /* sentinel */
 };
 
-MOD_INIT(_zope_hookable)
+static struct PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,
+    .m_name="_zope_hookable",
+    .m_doc=module__doc__,
+    .m_size=-1,
+    .m_methods=module_methods,
+};
+
+static PyObject*
+init(void)
 {
     PyObject* m;
 
-    MOD_DEF(m,
-            "_zope_hookable",
-            "Provide an efficient implementation for hookable objects",
-            module_methods)
+    m = PyModule_Create(&moduledef);
 
-    if (m == NULL)
-        return MOD_ERROR_VAL;
+    if (m == NULL) { return NULL; }
 
     hookabletype.tp_new = PyType_GenericNew;
     hookabletype.tp_free = PyObject_GC_Del;
 
     if (PyType_Ready(&hookabletype) < 0)
-        return MOD_ERROR_VAL;
+        return NULL;
 
     if (PyModule_AddObject(m, "hookable", (PyObject*)&hookabletype) < 0)
-        return MOD_ERROR_VAL;
+        return NULL;
 
-    return MOD_SUCCESS_VAL(m);
+    return m;
+}
+
+PyMODINIT_FUNC
+PyInit__zope_hookable(void)
+{
+    return init();
 }
