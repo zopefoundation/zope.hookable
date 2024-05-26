@@ -18,7 +18,7 @@ import platform
 
 
 _PYPY = platform.python_implementation() in ('PyPy', 'Jython')
-_PURE_PYTHON = os.environ.get('PURE_PYTHON', _PYPY)
+_PURE_PYTHON = os.environ.get('PURE_PYTHON') == '1'
 
 
 class _py_hookable:
@@ -69,7 +69,7 @@ try:
 except ImportError:  # pragma: no cover
     _c_hookable = None
 
-if _PURE_PYTHON or _c_hookable is None:
+if _PYPY or _PURE_PYTHON or _c_hookable is None:
     hookable = _py_hookable
 else:  # pragma: no cover
     hookable = _c_hookable
