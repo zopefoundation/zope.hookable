@@ -19,6 +19,18 @@ static char module__doc__[] = (
 #include "Python.h"
 #include "structmember.h"
 
+/*
+ *  Don't use heap-allocated types for Python < 3.11:  the API needed
+ *  to find the dynamic module, 'PyType_GetModuleByDef', was added then.
+ */
+#if PY_VERSION_HEX < 0x030b0000
+#define USE_STATIC_TYPES 1
+#define USE_HEAP_TYPES 0
+#else
+#define USE_STATIC_TYPES 0
+#define USE_HEAP_TYPES 1
+#endif
+
 typedef struct
 {
     PyObject_HEAD
@@ -192,14 +204,37 @@ static PyMemberDef hookable_members[] = {
     { NULL } /* Sentinel */
 };
 
-static char hookable_type__doc__[] =
+static char hookable__name__[] = "zope.hookable.hookable";
+static char hookable__doc__[] =
   "Callable objects that support being overridden";
+
+#if USE_STATIC_TYPES
+
+static PyTypeObject hookable_type_def = {
+    PyVarObject_HEAD_INIT(NULL, 0)
+    .tp_name           = hookable__name__,
+    .tp_doc            = hookable__doc__,
+    .tp_basicsize      = sizeof(hookable),
+    .tp_flags          = Py_TPFLAGS_DEFAULT |
+                         Py_TPFLAGS_BASETYPE |
+                         Py_TPFLAGS_HAVE_GC,
+    .tp_init           = (initproc)hookable_init,
+    .tp_call           = (ternaryfunc)hookable_call,
+    .tp_getattro       = (getattrofunc)hookable_getattro,
+    .tp_traverse       = (traverseproc)hookable_traverse,
+    .tp_clear          = (inquiry)hookable_clear,
+    .tp_dealloc        = (destructor)hookable_dealloc,
+    .tp_methods        = hookable_methods,
+    .tp_members        = hookable_members,
+};
+
+#else
 
 /*
  * Heap type: hookable
  */
 static PyType_Slot hookable_type_slots[] = {
-    {Py_tp_doc,         hookable_type__doc__},
+    {Py_tp_doc,         hookable__doc__},
     {Py_tp_init,        hookable_init},
     {Py_tp_call,        hookable_call},
     {Py_tp_getattro,    hookable_getattro},
@@ -223,6 +258,12 @@ static PyType_Spec hookable_type_spec = {
     .slots      = hookable_type_slots
 };
 
+#endif
+
+/*
+ * Module initialization
+ */
+
 static struct PyMethodDef hookable_module_methods[] = {
     { NULL, NULL }  /* sentinel */
 };
@@ -238,11 +279,23 @@ hookable_module_exec(PyObject* module)
 {
     PyObject* hookable_type;
 
-    /* Initialize hookable type:
-     */
+#if USE_STATIC_TYPES
+
+    hookable_type_def.tp_new = PyType_GenericNew;
+    hookable_type_def.tp_free = PyObject_GC_Del;
+
+    if (PyType_Ready(&hookable_type_def) < 0)
+        return -1;
+
+    hookable_type = &hookable_type_def;
+
+#else
+
     hookable_type = PyType_FromModuleAndSpec(
         module, &hookable_type_spec, NULL);
     if (hookable_type == NULL) { return -1; }
+
+#endif
 
     if (PyModule_AddObject(module, "hookable", hookable_type) < 0)
         return -1;
