@@ -66,8 +66,10 @@ hookable_init(hookable* self, PyObject* args, PyObject* kwds)
 static int
 hookable_traverse(hookable* self, visitproc visit, void* arg)
 {
+#if USE_HEAP_TYPES
 #if PY_VERSION_HEX >= 0x03090000
     Py_VISIT(Py_TYPE(self));
+#endif
 #endif
     Py_VISIT(self->implementation);
     Py_VISIT(self->original);
@@ -97,8 +99,10 @@ hookable_dealloc(hookable* self)
 
     tp->tp_free((PyObject*)self);
 
+#if USE_HEAP_TYPES
     /* heap types must decref their type when dealloc'ed */
     Py_DECREF(tp);
+#endif
 }
 
 static PyObject*
