@@ -17,8 +17,12 @@ import os
 import platform
 
 
-_PYPY = platform.python_implementation() in ('PyPy', 'Jython')
-_PURE_PYTHON = os.environ.get('PURE_PYTHON', _PYPY)
+# Keep these two flags separate:  we want the `_PURE_PYTHON` one
+# to represent that the flag is explicitly set to '1' in the environment,
+# since our 'tox.ini' sets it to '0' for its environments which expect
+# to test the C extension.
+_PYPY_OR_JAVA = platform.python_implementation() in ('PyPy', 'Jython')
+_PURE_PYTHON = os.environ.get('PURE_PYTHON') == '1'
 
 
 class _py_hookable:
@@ -69,7 +73,7 @@ try:
 except ImportError:  # pragma: no cover
     _c_hookable = None
 
-if _PURE_PYTHON or _c_hookable is None:
+if _PYPY_OR_JAVA or _PURE_PYTHON or _c_hookable is None:
     hookable = _py_hookable
 else:  # pragma: no cover
     hookable = _c_hookable
