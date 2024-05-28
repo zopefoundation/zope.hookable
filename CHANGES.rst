@@ -2,13 +2,15 @@
  Changes
 =========
 
-6.1 (unreleased)
+7.0 (unreleased)
 ================
 
 - C extension now enables multi-phase module initialization (PEP 489).
   For CPython >= 3.11, the ``hookable`` type is now a heap-allocated
   type.  See:
   https://docs.python.org/3.13/howto/isolating-extensions.html
+
+- Drop support for Python 3.7.
 
 - Add preliminary support for Python 3.13 as of 3.13a5.
 
