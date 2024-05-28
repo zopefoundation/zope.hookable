@@ -49,11 +49,16 @@ class PyHookableTests(PyHookableMixin,
                       unittest.TestCase):
 
     def test_pure_python(self):
+        from zope.hookable import _PYPY_OR_JAVA
         from zope.hookable import _PURE_PYTHON
         from zope.hookable import _c_hookable
         from zope.hookable import _py_hookable
         from zope.hookable import hookable
-        self.assertIs(hookable, _py_hookable if _PURE_PYTHON else _c_hookable)
+
+        if _PYPY_OR_JAVA or _PURE_PYTHON:
+            self.assertIs(hookable, _py_hookable)
+        else:
+            self.assertIs(hookable, _c_hookable)
 
     def test_before_hook(self):
         hooked = self._callFUT(return_foo)
