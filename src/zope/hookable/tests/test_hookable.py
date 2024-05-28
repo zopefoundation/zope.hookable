@@ -49,8 +49,8 @@ class PyHookableTests(PyHookableMixin,
                       unittest.TestCase):
 
     def test_pure_python(self):
-        from zope.hookable import _PYPY_OR_JAVA
         from zope.hookable import _PURE_PYTHON
+        from zope.hookable import _PYPY_OR_JAVA
         from zope.hookable import _c_hookable
         from zope.hookable import _py_hookable
         from zope.hookable import hookable
