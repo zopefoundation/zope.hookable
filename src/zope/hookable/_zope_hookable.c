@@ -19,18 +19,6 @@ static char module__doc__[] = (
 #include "Python.h"
 #include "structmember.h"
 
-/*
- *  Don't use heap-allocated types for Python < 3.11:  the API needed
- *  to find the dynamic module, 'PyType_GetModuleByDef', was added then.
- */
-#if PY_VERSION_HEX < 0x030b0000
-#define USE_STATIC_TYPES 1
-#define USE_HEAP_TYPES 0
-#else
-#define USE_STATIC_TYPES 0
-#define USE_HEAP_TYPES 1
-#endif
-
 typedef struct
 {
     PyObject_HEAD
@@ -66,10 +54,8 @@ hookable_init(hookable* self, PyObject* args, PyObject* kwds)
 static int
 hookable_traverse(hookable* self, visitproc visit, void* arg)
 {
-#if USE_HEAP_TYPES
 #if PY_VERSION_HEX >= 0x03090000
     Py_VISIT(Py_TYPE(self));
-#endif
 #endif
     Py_VISIT(self->implementation);
     Py_VISIT(self->original);
@@ -99,10 +85,8 @@ hookable_dealloc(hookable* self)
 
     tp->tp_free((PyObject*)self);
 
-#if USE_HEAP_TYPES
     /* heap types must decref their type when dealloc'ed */
     Py_DECREF(tp);
-#endif
 }
 
 static PyObject*
@@ -212,27 +196,6 @@ static char hookable__name__[] = "zope.hookable.hookable";
 static char hookable__doc__[] =
   "Callable objects that support being overridden";
 
-#if USE_STATIC_TYPES
-
-static PyTypeObject hookable_type_def = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name           = hookable__name__,
-    .tp_doc            = hookable__doc__,
-    .tp_basicsize      = sizeof(hookable),
-    .tp_flags          = Py_TPFLAGS_DEFAULT |
-                         Py_TPFLAGS_BASETYPE |
-                         Py_TPFLAGS_HAVE_GC,
-    .tp_init           = (initproc)hookable_init,
-    .tp_call           = (ternaryfunc)hookable_call,
-    .tp_getattro       = (getattrofunc)hookable_getattro,
-    .tp_traverse       = (traverseproc)hookable_traverse,
-    .tp_clear          = (inquiry)hookable_clear,
-    .tp_dealloc        = (destructor)hookable_dealloc,
-    .tp_methods        = hookable_methods,
-    .tp_members        = hookable_members,
-};
-
-#else
 
 /*
  * Heap type: hookable
@@ -251,7 +214,7 @@ static PyType_Slot hookable_type_slots[] = {
 };
 
 static PyType_Spec hookable_type_spec = {
-    .name       = "zope.hookable.hookable",
+    .name       = hookable__name__,
     .basicsize  = sizeof(hookable),
     .flags      = Py_TPFLAGS_DEFAULT |
                   Py_TPFLAGS_BASETYPE |
@@ -261,8 +224,6 @@ static PyType_Spec hookable_type_spec = {
                   Py_TPFLAGS_HAVE_GC,
     .slots      = hookable_type_slots
 };
-
-#endif
 
 /*
  * Module initialization
@@ -283,23 +244,8 @@ hookable_module_exec(PyObject* module)
 {
     PyObject* hookable_type;
 
-#if USE_STATIC_TYPES
-
-    hookable_type_def.tp_new = PyType_GenericNew;
-    hookable_type_def.tp_free = PyObject_GC_Del;
-
-    if (PyType_Ready(&hookable_type_def) < 0)
-        return -1;
-
-    hookable_type = &hookable_type_def;
-
-#else
-
-    hookable_type = PyType_FromModuleAndSpec(
-        module, &hookable_type_spec, NULL);
+    hookable_type = PyType_FromSpec(&hookable_type_spec);
     if (hookable_type == NULL) { return -1; }
-
-#endif
 
     if (PyModule_AddObject(module, "hookable", hookable_type) < 0)
         return -1;
