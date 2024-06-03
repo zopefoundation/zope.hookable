@@ -12,145 +12,113 @@
  #
  ############################################################################*/
 
-/* _zope_hookable.c
-
-   Provide an efficient implementation for hookable objects
-
- */
+static char module__doc__[] = (
+    "Provide an efficient implementation for hookable objects"
+);
 
 #include "Python.h"
 #include "structmember.h"
 
-typedef struct {
+typedef struct
+{
     PyObject_HEAD
-    PyObject *old;
-    PyObject *implementation;
+    PyObject* original;
+    PyObject* implementation;
 } hookable;
 
 static int
-hookable_init(hookable *self, PyObject *args, PyObject *kwds)
+hookable_init(hookable* self, PyObject* args, PyObject* kwds)
 {
-  static char *kwlist[] = {"implementation", NULL};
-  PyObject *implementation;
+    static char* kwlist[] = { "implementation", NULL };
+    PyObject* implementation;
 
-  if (! PyArg_ParseTupleAndKeywords(args, kwds, "O:hookable", kwlist,
-                                    &implementation))
-    return -1;
+    if (!PyArg_ParseTupleAndKeywords(
+          args, kwds, "O:hookable", kwlist, &implementation))
+        return -1;
 
-  Py_INCREF(implementation);
-  Py_INCREF(implementation);
-  Py_XDECREF(self->old);
-  self->old = implementation;
-  Py_XDECREF(self->implementation);
-  self->implementation = implementation;
+    /* Both 'self->original' and 'self->implementation' are originally
+     * set to the passed-in 'implementation', hence the need for
+     * two increfs.
+     */
+    Py_INCREF(implementation);
+    Py_XDECREF(self->original);
+    self->original = implementation;
 
-  return 0;
+    Py_INCREF(implementation);
+    Py_XDECREF(self->implementation);
+    self->implementation = implementation;
+
+    return 0;
 }
 
 static int
-hookable_traverse(hookable *self, visitproc visit, void *arg)
+hookable_traverse(hookable* self, visitproc visit, void* arg)
 {
-  if (self->implementation != NULL && visit(self->implementation, arg) < 0)
-    return -1;
-  if (self->old != NULL
-      && self->old != self->implementation
-      && visit(self->old, arg) < 0
-      )
-    return -1;
-
-  return 0;
+#if PY_VERSION_HEX >= 0x03090000
+    Py_VISIT(Py_TYPE(self));
+#endif
+    Py_VISIT(self->implementation);
+    Py_VISIT(self->original);
+    return 0;
 }
 
 static int
-hookable_clear(hookable *self)
+hookable_clear(hookable* self)
 {
-  Py_XDECREF(self->old);
-  self->old = NULL;
-  Py_XDECREF(self->implementation);
-  self->implementation = NULL;
-  return 0;
-}
+    Py_XDECREF(self->original);
+    self->original = NULL;
 
+    Py_XDECREF(self->implementation);
+    self->implementation = NULL;
+
+    return 0;
+}
 
 static void
-hookable_dealloc(hookable *self)
+hookable_dealloc(hookable* self)
 {
-  PyObject_GC_UnTrack((PyObject *)self);
-  Py_XDECREF(self->old);
-  Py_XDECREF(self->implementation);
-  Py_TYPE(self)->tp_free((PyObject*)self);
+    PyObject_GC_UnTrack((PyObject*)self);
+    PyTypeObject* tp = Py_TYPE(self);
+
+    Py_XDECREF(self->original);
+    Py_XDECREF(self->implementation);
+
+    tp->tp_free((PyObject*)self);
+
+    /* heap types must decref their type when dealloc'ed */
+    Py_DECREF(tp);
 }
 
-static PyObject *
-hookable_sethook(hookable *self, PyObject *implementation)
+static PyObject*
+hookable_call(hookable* self, PyObject* args, PyObject* kw)
 {
-  PyObject *old;
+    if (self->implementation != NULL)
+        return PyObject_Call(self->implementation, args, kw);
 
-  old = self->implementation;
-  Py_INCREF(implementation);
-  self->implementation = implementation;
-
-  if (old == NULL)
-    {
-      Py_INCREF(Py_None);
-      return Py_None;
-    }
-
-  return old;
+    PyErr_SetString(PyExc_TypeError, "Hookable has no implementation");
+    return NULL;
 }
 
-static PyObject *
-hookable_reset(hookable *self)
+static PyObject*
+hookable_getattro(hookable* self, PyObject* name)
 {
-  Py_XINCREF(self->old);
-  Py_XDECREF(self->implementation);
-  self->implementation = self->old;
-  Py_INCREF(Py_None);
-  return Py_None;
-}
-
-static struct PyMethodDef hookable_methods[] = {
-  {"sethook",   (PyCFunction)hookable_sethook, METH_O,
-   "Set the hook implementation for the hookable object"},
-  {"reset", (PyCFunction)hookable_reset, METH_NOARGS,
-   "Reset the hook to the original value"},
-  {NULL,        NULL}       /* sentinel */
-};
-
-
-static PyObject *
-hookable_call(hookable *self, PyObject *args, PyObject *kw)
-{
-  if (self->implementation != NULL)
-    return PyObject_Call(self->implementation, args, kw);
-  PyErr_SetString(PyExc_TypeError, "Hookable has no implementation");
-  return NULL;
-}
-
-
-static PyObject *
-hookable_getattro(hookable *self, PyObject *name)
-{
-    PyObject *result = NULL;
-    const char *name_as_string;
+    PyObject* result = NULL;
+    const char* name_as_string;
     int maybe_special_name;
 
     name_as_string = PyUnicode_AsUTF8(name);
-
-    if (name_as_string == NULL) {
-        return NULL;
-    }
+    if (name_as_string == NULL) { return NULL; }
 
     maybe_special_name = name_as_string[0] == '_' && name_as_string[1] == '_';
 
     if (maybe_special_name) {
         /* pass through __doc__ to the original implementation */
         if (strcmp("__doc__", name_as_string) == 0) {
-            return PyObject_GetAttr(self->old, name);
+            return PyObject_GetAttr(self->original, name);
         }
-        /* synthesize __base__ and __dict__ if the original fails */
+        /* synthesize __bases__ and __dict__ if the original fails */
         if (strcmp("__bases__", name_as_string) == 0) {
-            result = PyObject_GetAttr(self->old, name);
+            result = PyObject_GetAttr(self->original, name);
             if (result == NULL) {
                 PyErr_Clear();
                 result = PyTuple_New(0);
@@ -158,7 +126,7 @@ hookable_getattro(hookable *self, PyObject *name)
             return result;
         }
         if (strcmp("__dict__", name_as_string) == 0) {
-            result = PyObject_GetAttr(self->old, name);
+            result = PyObject_GetAttr(self->original, name);
             if (result == NULL) {
                 PyErr_Clear();
                 result = PyDict_New();
@@ -170,95 +138,148 @@ hookable_getattro(hookable *self, PyObject *name)
     return PyObject_GenericGetAttr((PyObject*)self, name);
 }
 
-static PyMemberDef hookable_members[] = {
-  { "original", T_OBJECT_EX, offsetof(hookable, old), READONLY },
-  { "implementation", T_OBJECT_EX, offsetof(hookable, implementation), READONLY },
-  {NULL}    /* Sentinel */
-};
+static char hookable_sethook__doc__[] = (
+    "Set the hook implementation for the hookable object\n\n"
+    "Return the previous hook implementation, or None."
+);
 
-
-static char Hookabletype__doc__[] =
-"Callable objects that support being overridden"
-;
-
-static PyTypeObject hookabletype = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    /* tp_name           */ "zope.hookable."
-                                "hookable",
-    /* tp_basicsize      */ sizeof(hookable),
-    /* tp_itemsize       */ 0,
-    /* tp_dealloc        */ (destructor)&hookable_dealloc,
-    /* tp_print          */ (printfunc)0,
-    /* tp_getattr        */ (getattrfunc)0,
-    /* tp_setattr        */ (setattrfunc)0,
-    /* tp_compare        */ 0,
-    /* tp_repr           */ (reprfunc)0,
-    /* tp_as_number      */ 0,
-    /* tp_as_sequence    */ 0,
-    /* tp_as_mapping     */ 0,
-    /* tp_hash           */ (hashfunc)0,
-    /* tp_call           */ (ternaryfunc)hookable_call,
-    /* tp_str            */ (reprfunc)0,
-    /* tp_getattro       */ (getattrofunc)hookable_getattro,
-    /* tp_setattro       */ (setattrofunc)0,
-    /* tp_as_buffer      */ 0,
-    /* tp_flags          */ Py_TPFLAGS_DEFAULT
-                                | Py_TPFLAGS_BASETYPE
-                                | Py_TPFLAGS_HAVE_GC,
-    /* tp_doc            */ Hookabletype__doc__,
-    /* tp_traverse       */ (traverseproc)hookable_traverse,
-    /* tp_clear          */ (inquiry)hookable_clear,
-    /* tp_richcompare    */ (richcmpfunc)0,
-    /* tp_weaklistoffset */ (long)0,
-    /* tp_iter           */ (getiterfunc)0,
-    /* tp_iternext       */ (iternextfunc)0,
-    /* tp_methods        */ hookable_methods,
-    /* tp_members        */ hookable_members,
-    /* tp_getset         */ 0,
-    /* tp_base           */ 0,
-    /* tp_dict           */ 0, /* internal use */
-    /* tp_descr_get      */ (descrgetfunc)0,
-    /* tp_descr_set      */ (descrsetfunc)0,
-    /* tp_dictoffset     */ 0,
-    /* tp_init           */ (initproc)hookable_init,
-    /* tp_alloc          */ (allocfunc)0,
-    /* tp_new            */ (newfunc)0 /*PyType_GenericNew*/,
-    /* tp_free           */ 0/*PyObject_GC_Del*/,
-};
-
-
-  #define MOD_ERROR_VAL NULL
-  #define MOD_SUCCESS_VAL(val) val
-  #define MOD_INIT(name) PyMODINIT_FUNC PyInit_##name(void)
-  #define MOD_DEF(ob, name, doc, methods) \
-      static struct PyModuleDef moduledef = { \
-        PyModuleDef_HEAD_INIT, name, doc, -1, methods, }; \
-      ob = PyModule_Create(&moduledef);
-
-static struct PyMethodDef module_methods[] = {
-    {NULL, NULL}
-};
-
-MOD_INIT(_zope_hookable)
+static PyObject*
+hookable_sethook(hookable* self, PyObject* implementation)
 {
-  PyObject *m;
+    PyObject* current;
 
-  MOD_DEF(m, "_zope_hookable",
-    "Provide an efficient implementation for hookable objects",
-    module_methods)
+    current = self->implementation;
+    Py_INCREF(implementation);
+    self->implementation = implementation;
 
-  if (m == NULL)
-    return MOD_ERROR_VAL;
+    if (current == NULL) {
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
 
-  hookabletype.tp_new = PyType_GenericNew;
-  hookabletype.tp_free = PyObject_GC_Del;
+    return current;
+}
 
-  if (PyType_Ready(&hookabletype) < 0)
-    return MOD_ERROR_VAL;
+static char hookable_reset__doc__[] = (
+    "Reset the hook to the original value"
+);
 
-  if (PyModule_AddObject(m, "hookable", (PyObject *)&hookabletype) < 0)
-    return MOD_ERROR_VAL;
+static PyObject*
+hookable_reset(hookable* self)
+{
+    Py_XINCREF(self->original);
+    Py_XDECREF(self->implementation);
 
-  return MOD_SUCCESS_VAL(m);
+    self->implementation = self->original;
 
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+static struct PyMethodDef hookable_methods[] = {
+    { "sethook",
+        (PyCFunction)hookable_sethook, METH_O, hookable_sethook__doc__ },
+    { "reset",
+        (PyCFunction)hookable_reset, METH_NOARGS, hookable_reset__doc__},
+    { NULL, NULL } /* sentinel */
+};
+
+static PyMemberDef hookable_members[] = {
+    { "original",
+        T_OBJECT_EX, offsetof(hookable, original), READONLY },
+    { "implementation",
+        T_OBJECT_EX, offsetof(hookable, implementation), READONLY },
+    { NULL } /* Sentinel */
+};
+
+static char hookable__name__[] = "zope.hookable.hookable";
+static char hookable__doc__[] =
+  "Callable objects that support being overridden";
+
+
+/*
+ * Heap type: hookable
+ */
+static PyType_Slot hookable_type_slots[] = {
+    {Py_tp_doc,         hookable__doc__},
+    {Py_tp_init,        hookable_init},
+    {Py_tp_call,        hookable_call},
+    {Py_tp_getattro,    hookable_getattro},
+    {Py_tp_traverse,    hookable_traverse},
+    {Py_tp_clear,       hookable_clear},
+    {Py_tp_dealloc,     hookable_dealloc},
+    {Py_tp_members,     hookable_members},
+    {Py_tp_methods,     hookable_methods},
+    {0,                 NULL}
+};
+
+static PyType_Spec hookable_type_spec = {
+    .name       = hookable__name__,
+    .basicsize  = sizeof(hookable),
+    .flags      = Py_TPFLAGS_DEFAULT |
+                  Py_TPFLAGS_BASETYPE |
+#if PY_VERSION_HEX >= 0x030c0000
+                  Py_TPFLAGS_MANAGED_WEAKREF |
+#endif
+                  Py_TPFLAGS_HAVE_GC,
+    .slots      = hookable_type_slots
+};
+
+/*
+ * Module initialization
+ */
+
+static struct PyMethodDef hookable_module_methods[] = {
+    { NULL, NULL }  /* sentinel */
+};
+
+
+/* Handler for the 'execute' phase of multi-phase initialization
+ *
+ * See: https://docs.python.org/3/c-api/module.html#multi-phase-initialization
+ * and: https://peps.python.org/pep-0489/#module-execution-phase
+ */
+static int
+hookable_module_exec(PyObject* module)
+{
+    PyObject* hookable_type;
+
+    hookable_type = PyType_FromSpec(&hookable_type_spec);
+    if (hookable_type == NULL) { return -1; }
+
+    if (PyModule_AddObject(module, "hookable", hookable_type) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+/* Slot definitions for multi-phase initialization
+ *
+ * See: https://docs.python.org/3/c-api/module.html#multi-phase-initialization
+ * and: https://peps.python.org/pep-0489
+ */
+static PyModuleDef_Slot hookable_module_slots[] = {
+    {Py_mod_exec,       hookable_module_exec},
+    {0,                 NULL}
+};
+
+static struct PyModuleDef hookable_module_def = {
+    PyModuleDef_HEAD_INIT,
+    .m_name     = "_zope_hookable",
+    .m_doc      = module__doc__,
+    .m_methods  = hookable_module_methods,
+    .m_slots    = hookable_module_slots
+};
+
+static PyObject*
+init(void)
+{
+    return PyModuleDef_Init(&hookable_module_def);
+}
+
+PyMODINIT_FUNC
+PyInit__zope_hookable(void)
+{
+    return init();
 }
