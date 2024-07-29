@@ -123,7 +123,6 @@ setup(name='zope.hookable',
       ],
       include_package_data=True,
       zip_safe=False,
-      test_suite='zope.hookable.tests.test_hookable.test_suite',
       extras_require={
           'docs': ['Sphinx', 'sphinx_rtd_theme'],
           'testing': TESTS_REQUIRE + ['coverage'],
