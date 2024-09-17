@@ -2,6 +2,10 @@
  Changes
 =========
 
+7.1 (unreleased)
+================
+
+
 7.0 (2024-09-17)
 ================
 
@@ -15,6 +19,7 @@
 - Add support for Python 3.13.
 
 - Build windows wheels on GHA.
+
 
 6.0 (2023-10-05)
 ================
