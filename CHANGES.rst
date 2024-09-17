@@ -12,7 +12,7 @@
 
 - Drop support for Python 3.7.
 
-- Add preliminary support for Python 3.13 as of 3.13a5.
+- Add support for Python 3.13.
 
 - Build windows wheels on GHA.
 
