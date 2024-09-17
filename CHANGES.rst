@@ -2,7 +2,7 @@
  Changes
 =========
 
-7.0 (unreleased)
+7.0 (2024-09-17)
 ================
 
 - C extension now enables multi-phase module initialization (PEP 489).
