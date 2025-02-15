@@ -70,7 +70,7 @@ class _py_hookable:
 
 try:
     from zope.hookable._zope_hookable import hookable as _c_hookable
-except ImportError:  # pragma: no cover
+except ModuleNotFoundError:  # pragma: no cover
     _c_hookable = None
 
 if _PYPY_OR_JAVA or _PURE_PYTHON or _c_hookable is None:
