@@ -114,6 +114,10 @@ setup(name='zope.hookable',
       cmdclass={
           'build_ext': optional_build_ext,
       },
+      # we need the following two parameters because we compile C code,
+      # otherwise only the shared library is installed:
+      package_dir={'': 'src'},
+      packages=['zope.hookable'],
       install_requires=[
           'setuptools',
       ],
