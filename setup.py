@@ -25,7 +25,6 @@ from distutils.errors import DistutilsExecError
 from distutils.errors import DistutilsPlatformError
 
 from setuptools import Extension
-from setuptools import find_packages
 from setuptools import setup
 from setuptools.command.build_ext import build_ext
 
@@ -81,7 +80,7 @@ else:
 
 TESTS_REQUIRE = [
     'zope.testing',
-    'zope.testrunner',
+    'zope.testrunner >= 6.4',
 ]
 
 setup(name='zope.hookable',
@@ -115,9 +114,6 @@ setup(name='zope.hookable',
       cmdclass={
           'build_ext': optional_build_ext,
       },
-      packages=find_packages('src'),
-      package_dir={'': 'src'},
-      namespace_packages=['zope'],
       install_requires=[
           'setuptools',
       ],
