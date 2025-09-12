@@ -25,7 +25,6 @@ from distutils.errors import DistutilsExecError
 from distutils.errors import DistutilsPlatformError
 
 from setuptools import Extension
-from setuptools import find_packages
 from setuptools import setup
 from setuptools.command.build_ext import build_ext
 
@@ -81,11 +80,11 @@ else:
 
 TESTS_REQUIRE = [
     'zope.testing',
-    'zope.testrunner',
+    'zope.testrunner >= 6.4',
 ]
 
 setup(name='zope.hookable',
-      version='7.1.dev0',
+      version='8.0.dev0',
       url='http://github.com/zopefoundation/zope.hookable',
       license='ZPL-2.1',
       description='Zope hookable',
@@ -115,9 +114,10 @@ setup(name='zope.hookable',
       cmdclass={
           'build_ext': optional_build_ext,
       },
-      packages=find_packages('src'),
+      # we need the following two parameters because we compile C code,
+      # otherwise only the shared library is installed:
       package_dir={'': 'src'},
-      namespace_packages=['zope'],
+      packages=['zope.hookable'],
       install_requires=[
           'setuptools',
       ],
