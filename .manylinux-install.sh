@@ -65,6 +65,9 @@ for PYBIN in /opt/python/*/bin; do
     fi
 done
 
+# Show what wheels we have
+echo "Fixing up the following wheels:"
+ls -l wheelhouse/zope?hookable*.whl
 # Bundle external shared libraries into the wheels
 for whl in wheelhouse/zope?hookable*.whl; do
     auditwheel repair "$whl" -w /io/wheelhouse/
