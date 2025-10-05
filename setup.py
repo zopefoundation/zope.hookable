@@ -118,9 +118,6 @@ setup(name='zope.hookable',
       # otherwise only the shared library is installed:
       package_dir={'': 'src'},
       packages=['zope.hookable'],
-      install_requires=[
-          'setuptools',
-      ],
       include_package_data=True,
       zip_safe=False,
       extras_require={
