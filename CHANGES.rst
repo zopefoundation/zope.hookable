@@ -5,6 +5,8 @@
 8.1 (unreleased)
 ================
 
+- Remove unnecessary ``setuptools`` runtime dependency.
+
 - Drop support for Python 3.9.
 
 - Add support for Python 3.14.
