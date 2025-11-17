@@ -1,15 +1,14 @@
-=========
- Changes
-=========
+Change log
+==========
 
 8.2 (unreleased)
-================
+----------------
 
-- Nothing changed yet.
+- Move all supported package metadata into ``pyproject.toml``.
 
 
 8.1 (2025-10-28)
-================
+----------------
 
 - Remove unnecessary ``setuptools`` runtime dependency.
 
@@ -17,8 +16,9 @@
 
 - Add support for Python 3.14.
 
+
 8.0 (2025-09-12)
-================
+----------------
 
 - Replace ``pkg_resources`` namespace with PEP 420 native namespace.
 
@@ -26,8 +26,9 @@
 
 - Add preliminary support for Python 3.14.
 
+
 7.0 (2024-09-17)
-================
+----------------
 
 - C extension now enables multi-phase module initialization (PEP 489).
   For CPython >= 3.11, the ``hookable`` type is now a heap-allocated
@@ -42,7 +43,7 @@
 
 
 6.0 (2023-10-05)
-================
+----------------
 
 - Drop support for Python 2.7, 3.5, 3.6.
 
@@ -50,19 +51,19 @@
 
 
 5.4 (2022-11-17)
-================
+----------------
 
 - Add support for building arm64 wheels on macOS.
 
 
 5.3 (2022-11-03)
-================
+----------------
 
 - Add support for the final release of Python 3.11.
 
 
 5.2 (2022-09-13)
-================
+----------------
 
 - Add support for Python 3.10 and 3.11 (as of 3.11.0rc1).
 
@@ -71,7 +72,7 @@
 
 
 5.1.0 (2021-07-20)
-==================
+------------------
 
 - Add support for Python 3.9.
 
@@ -79,7 +80,7 @@
 
 
 5.0.1 (2020-03-10)
-==================
+------------------
 
 - Stop using the setuptools ``Feature`` class, allowing this
   project to be built from source with newer versions of setuptools
@@ -87,7 +88,7 @@
 
 
 5.0.0 (2019-11-12)
-==================
+------------------
 
 - Add support for Python 3.7 and 3.8.
 
@@ -95,7 +96,7 @@
 
 
 4.2.0 (2017-11-07)
-==================
+------------------
 
 - Expose the ``__doc__`` (and, where applicable, ``__bases__`` and
   ``__dict__``) of the hooked object. This lets Sphinx document them.
@@ -108,39 +109,44 @@
 
 
 4.1.0 (2017-07-26)
-==================
+------------------
 
 - Drop support for Python 2.6, 3.2 and 3.3.
 
 - Add support for Python 3.5 and 3.6.
 
+
 4.0.4 (2014-03-19)
-==================
+------------------
 
 - Add support for Python 3.4.
 
+
 4.0.3 (2014-03-17)
-==================
+------------------
 
 - Update ``boostrap.py`` to version 2.2.
 
 - Fix extension compilation on Py3k.
 
+
 4.0.2 (2012-12-31)
-==================
+------------------
 
 - Flesh out PyPI Trove classifiers.
 
+
 4.0.1 (2012-11-21)
-==================
+------------------
 
 - Add support for Python 3.3.
 
 - Avoid building the C extension explicitly (use the "feature" indirection
   instead).  https://bugs.launchpad.net/zope.hookable/+bug/1025470
 
+
 4.0.0 (2012-06-04)
-==================
+------------------
 
 - Add support for PyPy.
 
@@ -163,14 +169,16 @@
 
 - Add Python 3 support.
 
+
 3.4.1 (2009-04-05)
-==================
+------------------
 
 - Update for compatibility with Python 2.6 traceback formats.
 
 - Use Jython-compatible ``bootstrap.py``.
 
+
 3.4.0 (2007-07-20)
-==================
+------------------
 
 - Initial release as a separate project.

@@ -56,11 +56,6 @@ class optional_build_ext(build_ext):
         print('*' * 80)
 
 
-def read(*rnames):
-    with open(os.path.join(os.path.dirname(__file__), *rnames)) as f:
-        return f.read()
-
-
 codeoptimization = [
     Extension(
         "zope.hookable._zope_hookable",
@@ -78,52 +73,5 @@ if is_pypy_or_jython:
 else:
     ext_modules = codeoptimization
 
-TESTS_REQUIRE = [
-    'zope.testing',
-    'zope.testrunner >= 6.4',
-]
-
-setup(name='zope.hookable',
-      version='8.2.dev0',
-      url='http://github.com/zopefoundation/zope.hookable',
-      license='ZPL-2.1',
-      description='Zope hookable',
-      keywords='function hook replacement loose coupled',
-      author='Zope Foundation and Contributors',
-      author_email='zope-dev@zope.dev',
-      long_description=(read('README.rst') + '\n\n' +
-                        read('CHANGES.rst')),
-      classifiers=[
-          "Development Status :: 5 - Production/Stable",
-          "Intended Audience :: Developers",
-          "License :: OSI Approved :: Zope Public License",
-          "Operating System :: OS Independent",
-          "Programming Language :: Python",
-          "Programming Language :: Python :: 3",
-          "Programming Language :: Python :: 3.10",
-          "Programming Language :: Python :: 3.11",
-          "Programming Language :: Python :: 3.12",
-          "Programming Language :: Python :: 3.13",
-          "Programming Language :: Python :: 3.14",
-          "Programming Language :: Python :: Implementation :: CPython",
-          "Programming Language :: Python :: Implementation :: PyPy",
-          "Framework :: Zope :: 3",
-          "Topic :: Software Development :: Libraries :: Python Modules",
-      ],
-      ext_modules=ext_modules,
-      cmdclass={
-          'build_ext': optional_build_ext,
-      },
-      # we need the following two parameters because we compile C code,
-      # otherwise only the shared library is installed:
-      package_dir={'': 'src'},
-      packages=['zope.hookable'],
-      include_package_data=True,
-      zip_safe=False,
-      extras_require={
-          'docs': ['Sphinx', 'sphinx_rtd_theme'],
-          'testing': TESTS_REQUIRE + ['coverage'],
-          'test': TESTS_REQUIRE,
-      },
-      python_requires='>=3.10',
-      )
+setup(ext_modules=ext_modules,
+      cmdclass={'build_ext': optional_build_ext})
