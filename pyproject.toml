@@ -11,7 +11,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "zope.hookable"
-version = "8.2.dev0"
+version = "8.2"
 description = "Zope hookable"
 keywords = ["zope", "function", "hook", "replacement", "loose", "coupled"]
 readme = "README.rst"
