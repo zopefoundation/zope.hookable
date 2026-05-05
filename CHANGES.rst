@@ -4,6 +4,10 @@ Change log
 8.3 (unreleased)
 ----------------
 
+- Add support for automatically building and publishing Windows/ARM64 wheels.
+
+- Add support for automatically building and publishing source distributions.
+
 
 8.2 (2025-11-18)
 ----------------
