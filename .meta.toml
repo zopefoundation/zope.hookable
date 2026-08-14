@@ -2,7 +2,7 @@
 # https://github.com/zopefoundation/meta/tree/master/src/zope/meta/c-code
 [meta]
 template = "c-code"
-commit-id = "fee4a500"
+commit-id = "a302ef7f"
 
 [python]
 with-windows = true
@@ -21,6 +21,11 @@ coverage-command = [
 
 [coverage]
 fail-under = 98
+
+[check-manifest]
+additional-ignores = [
+    "docs/_build/html/_static/*/*",
+    ]
 
 [manifest]
 additional-rules = [
