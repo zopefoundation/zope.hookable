@@ -9,7 +9,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "zope.hookable"
-version = "8.4"
+version = "8.5.dev0"
 description = "Zope hookable"
 keywords = ["zope", "function", "hook", "replacement", "loose", "coupled"]
 dynamic = ["readme"]
