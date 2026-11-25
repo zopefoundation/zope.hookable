@@ -37,6 +37,9 @@ classifiers = [
 ]
 dependencies = []
 
+[tool.distutils.bdist_wheel]
+py_limited_api = "cp312"
+
 [project.optional-dependencies]
 docs = [
   "Sphinx",

@@ -60,6 +60,7 @@ codeoptimization = [
     Extension(
         "zope.hookable._zope_hookable",
         [os.path.join('src', 'zope', 'hookable', "_zope_hookable.c")],
+        py_limited_api=True,
     ),
 ]
 
