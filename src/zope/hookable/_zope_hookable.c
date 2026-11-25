@@ -62,17 +62,18 @@ hookable_init(hookable* self, PyObject* args, PyObject* kwds)
     return 0;
 }
 
+
 static int
 hookable_traverse(hookable* self, visitproc visit, void* arg)
 {
+/* this guard probably not needed anymore */
 #if PY_VERSION_HEX >= 0x03090000
-    Py_VISIT((PyObject *)Py_TYPE(self));
+    Py_VISIT((PyObject *)Py_TYPE((PyObject *)self));
 #endif
     Py_VISIT(self->implementation);
     Py_VISIT(self->original);
     return 0;
 }
-
 
 static int
 hookable_clear(hookable* self)
@@ -90,7 +91,7 @@ static void
 hookable_dealloc(hookable* self)
 {
     PyObject_GC_UnTrack((PyObject*)self);
-    PyTypeObject* tp = Py_TYPE(self);
+    PyTypeObject* tp = Py_TYPE((PyObject *)self);
 
     if (self->wk_weakreflist != NULL)
         PyObject_ClearWeakRefs((PyObject *)self);
@@ -201,15 +202,6 @@ static struct PyMethodDef hookable_methods[] = {
     { NULL, NULL } /* sentinel */
 };
 
-/*static PyMemberDef hookable_members[] = {
-    { "__weaklistoffset__",
-        T_PYSSIZET, offsetof(hookable, wk_weakreflist), Py_READONLY },
-    { "original",
-        T_OBJECT_EX, offsetof(hookable, original), Py_READONLY },
-    { "implementation",
-        T_OBJECT_EX, offsetof(hookable, implementation), Py_READONLY },
-};
-*/
 
 static PyMemberDef hookable_members[] = {
     { "__weaklistoffset__",
