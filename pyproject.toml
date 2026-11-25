@@ -13,7 +13,7 @@ version = "8.5.dev0"
 description = "Zope hookable"
 keywords = ["zope", "function", "hook", "replacement", "loose", "coupled"]
 dynamic = ["readme"]
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 license = "ZPL-2.1"
 authors = [
   { name = "Zope Foundation and contributors", email = "zope-dev@zope.dev" },
@@ -28,7 +28,6 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
@@ -37,6 +36,9 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = []
+
+[tool.distutils.bdist_wheel]
+py_limited_api = "cp312"
 
 [project.optional-dependencies]
 docs = [

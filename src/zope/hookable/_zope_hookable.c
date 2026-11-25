@@ -15,16 +15,25 @@
 static char module__doc__[] = (
     "Provide an efficient implementation for hookable objects"
 );
-
+/* 3.11 API #define Py_LIMITED_API 0x030B0000*/
+/* 3.12 API */
+#define Py_LIMITED_API 0x030C0000
+#include <stddef.h>
+#include <string.h>
 #include "Python.h"
-#include "structmember.h"
 
-typedef struct
-{
+/* not needed with 3.12 API
+#include "structmember.h"
+*/
+
+/* added wk_weakreflist for limited API*/
+typedef struct {
     PyObject_HEAD
-    PyObject* original;
-    PyObject* implementation;
+    PyObject *wk_weakreflist;
+    PyObject *original;
+    PyObject *implementation;
 } hookable;
+
 
 static int
 hookable_init(hookable* self, PyObject* args, PyObject* kwds)
@@ -35,6 +44,8 @@ hookable_init(hookable* self, PyObject* args, PyObject* kwds)
     if (!PyArg_ParseTupleAndKeywords(
           args, kwds, "O:hookable", kwlist, &implementation))
         return -1;
+
+    self->wk_weakreflist = NULL;
 
     /* Both 'self->original' and 'self->implementation' are originally
      * set to the passed-in 'implementation', hence the need for
@@ -51,11 +62,13 @@ hookable_init(hookable* self, PyObject* args, PyObject* kwds)
     return 0;
 }
 
+
 static int
 hookable_traverse(hookable* self, visitproc visit, void* arg)
 {
+/* this guard probably not needed anymore */
 #if PY_VERSION_HEX >= 0x03090000
-    Py_VISIT(Py_TYPE(self));
+    Py_VISIT((PyObject *)Py_TYPE((PyObject *)self));
 #endif
     Py_VISIT(self->implementation);
     Py_VISIT(self->original);
@@ -78,12 +91,17 @@ static void
 hookable_dealloc(hookable* self)
 {
     PyObject_GC_UnTrack((PyObject*)self);
-    PyTypeObject* tp = Py_TYPE(self);
+    PyTypeObject* tp = Py_TYPE((PyObject *)self);
+
+    if (self->wk_weakreflist != NULL)
+        PyObject_ClearWeakRefs((PyObject *)self);
 
     Py_XDECREF(self->original);
     Py_XDECREF(self->implementation);
 
-    tp->tp_free((PyObject*)self);
+    /* removed for Stable API
+    tp->tp_free((PyObject*)self);*/
+    PyObject_GC_Del(self);
 
     /* heap types must decref their type when dealloc'ed */
     Py_DECREF(tp);
@@ -106,7 +124,7 @@ hookable_getattro(hookable* self, PyObject* name)
     const char* name_as_string;
     int maybe_special_name;
 
-    name_as_string = PyUnicode_AsUTF8(name);
+    name_as_string = PyUnicode_AsUTF8AndSize(name, NULL);
     if (name_as_string == NULL) { return NULL; }
 
     maybe_special_name = name_as_string[0] == '_' && name_as_string[1] == '_';
@@ -184,18 +202,21 @@ static struct PyMethodDef hookable_methods[] = {
     { NULL, NULL } /* sentinel */
 };
 
+
 static PyMemberDef hookable_members[] = {
+    { "__weaklistoffset__",
+        Py_T_PYSSIZET, offsetof(hookable, wk_weakreflist), Py_READONLY },
     { "original",
-        T_OBJECT_EX, offsetof(hookable, original), READONLY },
+        Py_T_OBJECT_EX, offsetof(hookable, original), Py_READONLY },
     { "implementation",
-        T_OBJECT_EX, offsetof(hookable, implementation), READONLY },
+        Py_T_OBJECT_EX, offsetof(hookable, implementation), Py_READONLY },
     { NULL } /* Sentinel */
 };
+
 
 static char hookable__name__[] = "zope.hookable.hookable";
 static char hookable__doc__[] =
   "Callable objects that support being overridden";
-
 
 /*
  * Heap type: hookable
@@ -218,9 +239,6 @@ static PyType_Spec hookable_type_spec = {
     .basicsize  = sizeof(hookable),
     .flags      = Py_TPFLAGS_DEFAULT |
                   Py_TPFLAGS_BASETYPE |
-#if PY_VERSION_HEX >= 0x030c0000
-                  Py_TPFLAGS_MANAGED_WEAKREF |
-#endif
                   Py_TPFLAGS_HAVE_GC,
     .slots      = hookable_type_slots
 };
