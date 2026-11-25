@@ -33,3 +33,6 @@ share/
 testing.log
 uv.lock
 var/
+# pixi environments
+.pixi/*
+!.pixi/config.toml

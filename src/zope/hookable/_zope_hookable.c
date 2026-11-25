@@ -15,16 +15,23 @@
 static char module__doc__[] = (
     "Provide an efficient implementation for hookable objects"
 );
-
+/* 3.11 API #define Py_LIMITED_API 0x030B0000*/
+/* 3.12 API */
+#define Py_LIMITED_API 0x030C0000
 #include "Python.h"
-#include "structmember.h"
 
-typedef struct
-{
+/* not needed with 3.12 API
+#include "structmember.h"
+*/
+
+/* added wk_weakreflist for limited API*/
+typedef struct {
     PyObject_HEAD
-    PyObject* original;
-    PyObject* implementation;
+    PyObject *wk_weakreflist;
+    PyObject *original;
+    PyObject *implementation;
 } hookable;
+
 
 static int
 hookable_init(hookable* self, PyObject* args, PyObject* kwds)
@@ -35,6 +42,8 @@ hookable_init(hookable* self, PyObject* args, PyObject* kwds)
     if (!PyArg_ParseTupleAndKeywords(
           args, kwds, "O:hookable", kwlist, &implementation))
         return -1;
+
+    self->wk_weakreflist = NULL;
 
     /* Both 'self->original' and 'self->implementation' are originally
      * set to the passed-in 'implementation', hence the need for
@@ -80,10 +89,15 @@ hookable_dealloc(hookable* self)
     PyObject_GC_UnTrack((PyObject*)self);
     PyTypeObject* tp = Py_TYPE(self);
 
+    if (self->wk_weakreflist != NULL)
+        PyObject_ClearWeakRefs((PyObject *)self);
+
     Py_XDECREF(self->original);
     Py_XDECREF(self->implementation);
 
-    tp->tp_free((PyObject*)self);
+    /* removed for Stable API
+    tp->tp_free((PyObject*)self);*/
+    PyObject_GC_Del(self)
 
     /* heap types must decref their type when dealloc'ed */
     Py_DECREF(tp);
@@ -185,12 +199,15 @@ static struct PyMethodDef hookable_methods[] = {
 };
 
 static PyMemberDef hookable_members[] = {
+    { "__weaklistoffset__",
+        T_PYSSIZET, offsetof(hookable, wk_weakreflist), Py_READONLY },
     { "original",
-        T_OBJECT_EX, offsetof(hookable, original), READONLY },
+        T_OBJECT_EX, offsetof(hookable, original), Py_READONLY },
     { "implementation",
-        T_OBJECT_EX, offsetof(hookable, implementation), READONLY },
+        T_OBJECT_EX, offsetof(hookable, implementation), Py_READONLY },
     { NULL } /* Sentinel */
 };
+
 
 static char hookable__name__[] = "zope.hookable.hookable";
 static char hookable__doc__[] =
@@ -218,9 +235,6 @@ static PyType_Spec hookable_type_spec = {
     .basicsize  = sizeof(hookable),
     .flags      = Py_TPFLAGS_DEFAULT |
                   Py_TPFLAGS_BASETYPE |
-#if PY_VERSION_HEX >= 0x030c0000
-                  Py_TPFLAGS_MANAGED_WEAKREF |
-#endif
                   Py_TPFLAGS_HAVE_GC,
     .slots      = hookable_type_slots
 };
