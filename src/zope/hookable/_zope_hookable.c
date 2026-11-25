@@ -18,6 +18,8 @@ static char module__doc__[] = (
 /* 3.11 API #define Py_LIMITED_API 0x030B0000*/
 /* 3.12 API */
 #define Py_LIMITED_API 0x030C0000
+#include <stddef.h>
+#include <string.h>
 #include "Python.h"
 
 /* not needed with 3.12 API
@@ -64,12 +66,13 @@ static int
 hookable_traverse(hookable* self, visitproc visit, void* arg)
 {
 #if PY_VERSION_HEX >= 0x03090000
-    Py_VISIT(Py_TYPE(self));
+    Py_VISIT((PyObject *)Py_TYPE(self));
 #endif
     Py_VISIT(self->implementation);
     Py_VISIT(self->original);
     return 0;
 }
+
 
 static int
 hookable_clear(hookable* self)
@@ -97,7 +100,7 @@ hookable_dealloc(hookable* self)
 
     /* removed for Stable API
     tp->tp_free((PyObject*)self);*/
-    PyObject_GC_Del(self)
+    PyObject_GC_Del(self);
 
     /* heap types must decref their type when dealloc'ed */
     Py_DECREF(tp);
@@ -120,7 +123,7 @@ hookable_getattro(hookable* self, PyObject* name)
     const char* name_as_string;
     int maybe_special_name;
 
-    name_as_string = PyUnicode_AsUTF8(name);
+    name_as_string = PyUnicode_AsUTF8AndSize(name, NULL);
     if (name_as_string == NULL) { return NULL; }
 
     maybe_special_name = name_as_string[0] == '_' && name_as_string[1] == '_';
@@ -198,13 +201,23 @@ static struct PyMethodDef hookable_methods[] = {
     { NULL, NULL } /* sentinel */
 };
 
-static PyMemberDef hookable_members[] = {
+/*static PyMemberDef hookable_members[] = {
     { "__weaklistoffset__",
         T_PYSSIZET, offsetof(hookable, wk_weakreflist), Py_READONLY },
     { "original",
         T_OBJECT_EX, offsetof(hookable, original), Py_READONLY },
     { "implementation",
         T_OBJECT_EX, offsetof(hookable, implementation), Py_READONLY },
+};
+*/
+
+static PyMemberDef hookable_members[] = {
+    { "__weaklistoffset__",
+        Py_T_PYSSIZET, offsetof(hookable, wk_weakreflist), Py_READONLY },
+    { "original",
+        Py_T_OBJECT_EX, offsetof(hookable, original), Py_READONLY },
+    { "implementation",
+        Py_T_OBJECT_EX, offsetof(hookable, implementation), Py_READONLY },
     { NULL } /* Sentinel */
 };
 
@@ -212,7 +225,6 @@ static PyMemberDef hookable_members[] = {
 static char hookable__name__[] = "zope.hookable.hookable";
 static char hookable__doc__[] =
   "Callable objects that support being overridden";
-
 
 /*
  * Heap type: hookable
